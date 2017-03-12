@@ -16,7 +16,7 @@ After all this being said, I googled and followed this article to install my fir
 
 To some extent, this article may help people that are familiar with Hadoop or at least it's their second time configuring the system. To a complete idot like me, it brought this problem:
 
-- First of all, when installing HomeBrew, I was prompted to install Java JDK (of course!), which leads to a future problem that led me to uninstall everything: the Java version installed by default (1.8) is actually not supported as documented [here] (https://wiki.apache.org/hadoop/HadoopJavaVersions){:target="_blank"}. So that is why everytime I tried to run a Hadoop start, it barked for "Could not create the Java Virtual Machine". Lesson learned: install JDK 1.7 instead of 1.8.
+- First of all, when installing HomeBrew, I was prompted to install Java JDK (of course!), which leads to a future problem that led me to uninstall everything: the Java version installed by default (1.8) is actually not supported as documented [here](https://wiki.apache.org/hadoop/HadoopJavaVersions){:target="_blank"}. So that is why everytime I tried to run a Hadoop start, it barked for "Could not create the Java Virtual Machine". Lesson learned: install JDK 1.7 instead of 1.8.
 
 So I followed the offical guide: Hadoop the Definitive Guide by Tom White. Here are the steps:
 - Do not use root user (if you don't know what a root user is, it is by default disabled by Mac, so if you are new to Mac, you probably don't have to worry about it).
@@ -36,12 +36,11 @@ tar xzf hadoop-x.y.z.tar.gz
 vim ~/.bash_profile
 ```
 
-For people like me who have a headache with vim, here are some common usage of it:
+For people like me who have headaches with vim, here are some common usage of it:
 - In a newly opened vim window, press "a" to begin edit.
 - Press "Esc" to quit editing mode.
 - In non-editing mode, hold "Shift" and press "Z" and "Z" to save your change and exit.
 - In non-editing mode, hold "Shift" and press "Z" and "Q" to quit without saving.
-
 - After creation of bash_profile file, here is what I put in there:
 
 ```bash
