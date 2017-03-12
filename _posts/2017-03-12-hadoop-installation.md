@@ -16,11 +16,11 @@ After all this being said, I googled and followed this article to install my fir
 
 To some extent, this article may help people that are familiar with Hadoop or at least it's their second time configuring the system. To a complete idot like me, it brought this problem:
 
-- First of all, when installing HomeBrew, I was prompted to install Java JDK (of course!), which leads to a future problem that led me to uninstall everything: the Java version installed by default (1.8) is actually not supported (https://wiki.apache.org/hadoop/HadoopJavaVersions) {:target="_blank"}. So that is why everytime I tried to run a Hadoop start, it barked for "Could not create the Java Virtual Machine". Lesson learned: install JDK 1.7 instead of 1.8.
+- First of all, when installing HomeBrew, I was prompted to install Java JDK (of course!), which leads to a future problem that led me to uninstall everything: the Java version installed by default (1.8) is actually not supported as documented [here] (https://wiki.apache.org/hadoop/HadoopJavaVersions){:target="_blank"}. So that is why everytime I tried to run a Hadoop start, it barked for "Could not create the Java Virtual Machine". Lesson learned: install JDK 1.7 instead of 1.8.
 
 So I followed the offical guide: Hadoop the Definitive Guide by Tom White. Here are the steps:
 - Do not use root user (if you don't know what a root user is, it is by default disabled by Mac, so if you are new to Mac, you probably don't have to worry about it).
-- Install JDK 1.7. I am using MacOS Sierra 10.12.3, so the compatible JDK version I found is [here](http://www.oracle.com/technetwork/java/javase/downloads/java-archive-downloads-javase7-521261.html#jdk-7u80-oth-JPR) {:target="_blank"}. I directly used the dmg file.
+- Install JDK 1.7. I am using MacOS Sierra 10.12.3, so the compatible JDK version I found is [here](http://www.oracle.com/technetwork/java/javase/downloads/java-archive-downloads-javase7-521261.html#jdk-7u80-oth-JPR){:target="_blank"}. I directly used the dmg file.
 - The installed JDK is located in /Library/Java/JavaVirtualMachines/jdk1.7.0_80.jdk/Contents/Home
 - Then I chose Hadoop 2.7.3 in [here](http://hadoop.apache.org/docs/r2.7.3/hadoop-project-dist/hadoop-common/SingleCluster.html#Download){:target="_blank"}.
 - To install Hadoop, simply move the downloaded gzipped tar file to your desired location, and then run:
