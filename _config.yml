@@ -48,15 +48,15 @@ favicon: /images/shortcut.jpg
 
 #Nav config
 nav:
-  - text: 首页
+  - text: Front Page
     url: /index.html
-  - text: 分类目录 
+  - text: Categories 
     url: /categories.html
-  - text: 文章归档
+  - text: Archives
     url: /archives.html
-  - text: 关于我
+  - text: About
     url: /about.html
-  - text: 友情链接
+  - text: Links
     url: /links.html
 
 #Author config
@@ -64,11 +64,11 @@ author:
     name: jiadreamran
     email: jiadreamran@gmail.com
     imageLink: /images/header.jpg
-    simpleIntro: I Have a Dream
+    simpleIntro: Windows programmer trying to get adapted to the world
     detailIntro:
-      <p>广告界的程序猿</p>
-      <p>目前在点评工作</p>
-      <p>主要使用Java,Scala不断学习中...</p>
+      <p>Developer working for reinsurance industry</p>
+      <p>Try to become ahead of my work</p>
+      <p>Java, JavaScript, Python, and other languages coming...</p>
       <p></p>
 
 #Follow me, you can choose your icon by http://fortawesome.github.io/Font-Awesome/icons/#brand
@@ -89,8 +89,6 @@ follow:
 #Links
 customLinks:
   - item:
-    - text: 技术小黑屋
-      url: http://droidyue.com/
     - text: Jekyll
       url: http://jekyllrb.com
     - text: Jekyll Theme
