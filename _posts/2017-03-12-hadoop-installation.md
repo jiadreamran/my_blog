@@ -1,7 +1,7 @@
 ---
 layout: post
 title: Hadoop Installation on Mac OSX
-date: 2017-03-12
+date: 2017-03-12 15:00:00
 category: "Hadoop"
 ---
 
@@ -29,8 +29,8 @@ So I followed the offical guide: Hadoop the Definitive Guide by Tom White. Here 
 tar xzf hadoop-x.y.z.tar.gz
 ```
 
-- After Hadoop has been successfully unzipped, I did two extra things: created environment variable on JAVA_HOME and created Hadoop command shortcuts. This is all done via the creation of bash_profile file. (A bash_profile file, according to my understanding, is like the environment variable in Windows, there you store locations of commonly used directories so whenever you enter a command, it will go through these directories to find it they are there.)
-- By default, I didn't find the bash_profile file anywhere, so after intensive searching, I used the following command to create it:
+- After Hadoop has been successfully unzipped, I did two extra things: created environment variable on JAVA_HOME and created Hadoop command shortcuts. This is all done via the creation of bash_profile file. (A bash_profile file, according to my understanding, is like the environment variable in Windows, there you store locations of commonly used directories so whenever you enter a command, it will go through these directories to find it.)
+- By default, I didn't find the bash_profile file anywhere, so after intensive researching, I used the following command to create it:
 
 ```bash
 vim ~/.bash_profile
@@ -60,7 +60,7 @@ So Hadoop commands will be registered to your terminal (you need to restart the 
 hadoop version
 ```
 
-You should be able to see some output like
+You should be able to see some output like:
 ```bash
 Hadoop 2.7.3
 Subversion https://git-wip-us.apache.org/repos/asf/hadoop.git -r baa91f7c6bc9cb92be5982de4719c1c8af91ccff
@@ -69,6 +69,10 @@ Compiled with protoc 2.5.0
 From source with checksum 2e4ce5f957ea4db193bce3734ff29ff4
 This command was run using YOUR_EXTRACTED_HADOOP_FOLDER/share/hadoop/common/hadoop-common-2.7.3.jar
 ```
+
+I stopped at Hadoop installation and haven't done any configurations (to core-site.xml, hdfs-site.xml, yarn-site.xml etc).
+
+The configuration part will be in my next blog.
 
 That's by far all I have gotten. Next time I will try to create a single cluster and see what I can run there.
 
