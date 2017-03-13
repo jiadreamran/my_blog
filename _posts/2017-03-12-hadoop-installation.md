@@ -1,8 +1,8 @@
 ---
 layout: post
 title: Hadoop Installation on Mac OSX
-date: 2016-08-09 16:45:22
-category: "scala"
+date: 2017-03-12
+category: "Hadoop"
 ---
 
 Well as a beginner of UNIX programming, I decided to build this web site just for me to review the code and installation that I have been learning.
