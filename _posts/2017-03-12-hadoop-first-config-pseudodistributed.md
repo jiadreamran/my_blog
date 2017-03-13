@@ -36,6 +36,7 @@ export HADOOP_CONF_DIR=/Users/jiadreamran/Desktop/hadoop/hadoop-2.7.3-jiadreamra
 In the future when you create other instances of Hadoop, you can replace it with your own folder.
 
 After copying all the files from etc/hadoop folder to my own config folder, I modifed the contents of the four following files:
+
 | Filename | Description |
 |---------|---------|
 | core-site.xml | Common configs of a hadoop site |
