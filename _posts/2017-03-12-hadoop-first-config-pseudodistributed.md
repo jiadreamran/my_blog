@@ -27,7 +27,7 @@ So here is what I did:
 vim ~/.bash_profile
 ```
 
-This will open the bash_profile I created in my [last article](hadoop-installation.html){:target="_blank"}. There I just added the following into the "export" list:
+This will open the bash_profile I created in my [previous article](hadoop-installation.html){:target="_blank"}. There I just added the following into the "export" list:
 
 ```bash
 export HADOOP_CONF_DIR=/Users/jiadreamran/Desktop/hadoop/hadoop-2.7.3-jiadreamran-config
