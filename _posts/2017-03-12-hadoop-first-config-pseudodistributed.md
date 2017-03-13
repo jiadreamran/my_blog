@@ -36,12 +36,12 @@ export HADOOP_CONF_DIR=/Users/jiadreamran/Desktop/hadoop/hadoop-2.7.3-jiadreamra
 In the future when you create other instances of Hadoop, you can replace it with your own folder.
 
 After copying all the files from etc/hadoop folder to my own config folder, I modifed the contents of the four following files:
-|Filename    |Description    |
+| Filename | Description |
 |---------|---------|
-|core-site.xml|Common configs of a hadoop site|
-|hdfs-site.xml|Config file for Hadoop Distributed Filesystem (HDFS)|
-|mapred-site.xml|Config file for MapReduce|
-|yarn-default.xml|Config file for YARN, <b><red>I don't know what YARN is at this moment.</red></b>|
+| core-site.xml | Common configs of a hadoop site |
+| hdfs-site.xml | Config file for Hadoop Distributed Filesystem (HDFS) |
+| mapred-site.xml | Config file for MapReduce |
+| yarn-default.xml | Config file for YARN, <b>I don't know what YARN is at this moment.</b> |
 
 The actual pseudodistributed config is done by modifying the file contents as such:
 ```xml
