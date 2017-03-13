@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Hadoop Configuaration: Pseudodistributed Mode
+title: Hadoop Configuaration Pseudodistributed Mode
 date: 2017-03-12 23:01:25
 category: "Hadoop"
 ---
