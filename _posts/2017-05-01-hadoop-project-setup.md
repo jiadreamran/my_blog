@@ -42,7 +42,7 @@ If you successfully completed the above steps, the following command should give
 mvn -v
 ```
 
-Then I started to create the [pom.xml](/resources/pom.xml){:target="_blank"} file. This pom file tells maven how to build the project and what would be the dependencies.
+Then I started to create the [pom.xml](assets/pom.xml){:target="_blank"} file. This pom file tells maven how to build the project and what would be the dependencies.
 
 Then I simply point my terminal to the folder that contains the pom file, and run the following command to build the project using eclipse:
 
