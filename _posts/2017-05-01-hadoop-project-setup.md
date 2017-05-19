@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Hadoop Installation on Mac OSX
+title: Hadoop Project Setup
 date: 2017-05-01 23:00:00
 category: "Hadoop"
 ---
