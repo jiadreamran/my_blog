@@ -67,6 +67,29 @@ sudo -u hdfs fs -chmod +rw /user/examples
 hadoop fs -copyFromLocal ~/*.avsc /user/examples
 ```
 
-This will create a folder "/user/examples" in HDFS and then copy the avro schema files in there.
+This will create a folder "/user/examples" in HDFS and then copy the avro schema files in there. Note that these schema files can also be read by Hive, which will enable querying jobs by creating MapReduce processes.
 
-Next, we will use Impala to import the 6 exported tables.
+Next, we will use Impala to import the 6 exported tables. Later on we will also experience Hive, which, when compared to Impala, is slower but more flexible. Impala reads directly from HDFS.
+
+We will be using Hue to execute Impala queries. Simply go to [Hue's page in Cloudera](http://www.cornercycle.com/about/hybrid-trailer-rentals-pg60.htm){:target="_blank"}. In "Query Editors" > "Impala", type in the following commands to make external tables out of HDFS. Note that the avro schema files will be used for Impala to read the data. There is no actual table created in here because Impala will read directly from the files:
+
+```sql
+CREATE EXTERNAL TABLE categories STORED AS AVRO
+LOCATION 'hdfs:///user/hive/warehouse/categories'
+TBLPROPERTIES ('avro.schema.url'='hdfs://quickstart/user/examples/sqoop_import_categories.avsc');
+CREATE EXTERNAL TABLE customers STORED AS AVRO
+LOCATION 'hdfs:///user/hive/warehouse/customers'
+TBLPROPERTIES ('avro.schema.url'='hdfs://quickstart/user/examples/sqoop_import_customers.avsc');
+CREATE EXTERNAL TABLE departments STORED AS AVRO
+LOCATION 'hdfs:///user/hive/warehouse/departments'
+TBLPROPERTIES ('avro.schema.url'='hdfs://quickstart/user/examples/sqoop_import_departments.avsc');
+CREATE EXTERNAL TABLE orders STORED AS AVRO
+LOCATION 'hdfs:///user/hive/warehouse/orders'
+TBLPROPERTIES ('avro.schema.url'='hdfs://quickstart/user/examples/sqoop_import_orders.avsc');
+CREATE EXTERNAL TABLE order_items STORED AS AVRO
+LOCATION 'hdfs:///user/hive/warehouse/order_items'
+TBLPROPERTIES ('avro.schema.url'='hdfs://quickstart/user/examples/sqoop_import_order_items.avsc');
+CREATE EXTERNAL TABLE products STORED AS AVRO
+LOCATION 'hdfs:///user/hive/warehouse/products'
+TBLPROPERTIES ('avro.schema.url'='hdfs://quickstart/user/examples/sqoop_import_products.avsc');
+```
