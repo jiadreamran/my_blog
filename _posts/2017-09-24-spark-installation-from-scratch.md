@@ -2,7 +2,7 @@
 layout: post
 title: Spark Installation and Configuration from Scratch
 date: 2017-09-24 22:00:00
-category: "Hadoop", "Spark"
+category: "Spark"
 ---
 
 It has been a while since last time I updated something. During this time I have learned more about hadoop and spark, which leads to me the decision to focus on spark.
