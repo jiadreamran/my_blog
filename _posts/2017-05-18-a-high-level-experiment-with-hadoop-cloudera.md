@@ -77,19 +77,43 @@ We will be using Hue to execute Impala queries. Simply go to [Hue's page in Clou
 CREATE EXTERNAL TABLE categories STORED AS AVRO
 LOCATION 'hdfs:///user/hive/warehouse/categories'
 TBLPROPERTIES ('avro.schema.url'='hdfs://quickstart/user/examples/sqoop_import_categories.avsc');
+
 CREATE EXTERNAL TABLE customers STORED AS AVRO
 LOCATION 'hdfs:///user/hive/warehouse/customers'
 TBLPROPERTIES ('avro.schema.url'='hdfs://quickstart/user/examples/sqoop_import_customers.avsc');
+
 CREATE EXTERNAL TABLE departments STORED AS AVRO
 LOCATION 'hdfs:///user/hive/warehouse/departments'
 TBLPROPERTIES ('avro.schema.url'='hdfs://quickstart/user/examples/sqoop_import_departments.avsc');
+
 CREATE EXTERNAL TABLE orders STORED AS AVRO
 LOCATION 'hdfs:///user/hive/warehouse/orders'
 TBLPROPERTIES ('avro.schema.url'='hdfs://quickstart/user/examples/sqoop_import_orders.avsc');
+
 CREATE EXTERNAL TABLE order_items STORED AS AVRO
 LOCATION 'hdfs:///user/hive/warehouse/order_items'
 TBLPROPERTIES ('avro.schema.url'='hdfs://quickstart/user/examples/sqoop_import_order_items.avsc');
+
 CREATE EXTERNAL TABLE products STORED AS AVRO
 LOCATION 'hdfs:///user/hive/warehouse/products'
 TBLPROPERTIES ('avro.schema.url'='hdfs://quickstart/user/examples/sqoop_import_products.avsc');
 ```
+
+You can then run SQL against the external table in Impala, for example:
+
+```sql
+-- top 10 revenue generating products
+select p.product_id, p.product_name, r.revenue
+from products p inner join
+(select oi.order_item_product_id, sum(cast(oi.order_item_subtotal as float)) as revenue
+from order_items oi inner join orders o
+on oi.order_item_order_id = o.order_id
+where o.order_status <> 'CANCELED'
+and o.order_status <> 'SUSPECTED_FRAUD'
+group by order_item_product_id) r
+on p.product_id = r.order_item_product_id
+order by r.revenue desc
+limit 10;
+```
+
+In the next article I will introduce a powerful "stream to HDFS" tool, Flume.
