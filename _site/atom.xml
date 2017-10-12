@@ -1,0 +1,1192 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+   <title>9leg</title>
+   <link href="http://localhost:4000/atom.xml" rel="self" type="application/atom+xml"/>
+   <link href="http://localhost:4000" rel="alternate" type="text/html" />
+   <updated>2017-10-12T00:29:51-04:00</updated>
+   <id>http://localhost:4000</id>
+   <author>
+     <name>jiadreamran</name>
+     <email>jiadreamran@gmail.com</email>
+   </author>
+
+   
+   <entry>
+     <title>Spark Installation and Configuration from Scratch</title>
+     <link href="http://localhost:4000/hadoop/2017/09/24/spark-installation-from-scratch.html"/>
+     <updated>2017-09-24T18:00:00-04:00</updated>
+     <id>http://localhost:4000/hadoop/2017/09/24/spark-installation-from-scratch</id>
+     <content type="html">&lt;p&gt;It has been a while since last time I updated something. During this time I have learned more about hadoop and spark, which leads to me the decision to focus on spark.&lt;/p&gt;
+
+&lt;p&gt;This is an article to guide you through spark installation/configuration via virtual machines. Again, I am not a typicall Linux/Mac user so everything is also new to me.&lt;/p&gt;
+
+&lt;p&gt;What I have before installation:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;MacOs Sierra 10.12&lt;/li&gt;
+  &lt;li&gt;VMWare Fusion 8.5 (purchased a license)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;To install Spark, there are a lot of things to configure:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Linux virtual machines (Redhat)&lt;/li&gt;
+  &lt;li&gt;Java installation&lt;/li&gt;
+  &lt;li&gt;Hadoop installation&lt;/li&gt;
+  &lt;li&gt;Spark installation&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Let’s install and configure them one at a time.&lt;/p&gt;
+
+&lt;h2 id=&quot;linux-virtual-machine-redhat&quot;&gt;Linux Virtual Machine (Redhat)&lt;/h2&gt;
+&lt;p&gt;I have VMWare Fusion installed on my Mac so the only thing I need is to have a virtual machine image to mount (I tried to build a customized virtual machine but failed). So I downloaded the Redhat Enterprise Linux 5.4.0 version (DVD iso) downloaded from &lt;a href=&quot;https://access.redhat.com/downloads/content/69/ver=/rhel---5/5.4/x86_64/product-software/&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h3 id=&quot;create-virtual-machines&quot;&gt;Create Virtual Machines&lt;/h3&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Open VMWare, go to virtual machine library.&lt;/li&gt;
+  &lt;li&gt;File &amp;gt; New, then double click on “Install from disc or image”.&lt;/li&gt;
+  &lt;li&gt;Browse to the iso file you just downloaded, then drag it onto the popup panel.&lt;/li&gt;
+  &lt;li&gt;Choose installation language and so on. Choose “Skip” in CD page.
+ 4.1 Software Selection: Server with GUI: select FTP Server, KDE, Development Tools.&lt;/li&gt;
+  &lt;li&gt;Configure your partition, make sure you choose “I will configure partitioning”. By default your VM will have 20 GB of disk space. To create a new mount point, click “+” button on the bottom left corner.
+ 5.1 Create a root mount point by selecting “&quot; as the mount point and assign it 15 GB. File system will be “xfs”.
+ 5.2 Create a boot mount point by selecting “\boot” as the mount point and assign it 300 MB (xfs).
+ 5.3 Create a swap mount point by selecting “swap” as the mount point and assign it 2048 MB (twice of the machine’s physical memory). The file system type will be defaulted to “swap”.&lt;/li&gt;
+  &lt;li&gt;After clicking “Done” button, “Begin Installation” should be enabled. Click it to start installation.&lt;/li&gt;
+  &lt;li&gt;During installation, you can set a password for root user.&lt;/li&gt;
+  &lt;li&gt;After installation, shut down the vm.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;Follow the above instruction, I created a virtual machine, “Master”. Both virtual machine bundle name and the name within VMWare are “Master”.&lt;/p&gt;
+
+&lt;p&gt;Then we will copy this “Master” machine and named it “Slave01”. To copy a vm in VMWare Fusion, follow &lt;a href=&quot;https://developers.redhat.com/products/rhel/download/&quot; target=&quot;_blank&quot;&gt;this tutorial&lt;/a&gt;. When opening up this newly copied vm (by simply double click on its bundle file), you have to choose “I Copied It” from the popup window.&lt;/p&gt;
+
+&lt;h3 id=&quot;configure-vmware-fusion-ip&quot;&gt;Configure VMWare Fusion IP&lt;/h3&gt;
+
+&lt;p&gt;This is a relatively easy but important task. You need to configure the IP address for VMWare so it can be used in conjunction with the virtual machines’ configured IP address.&lt;/p&gt;
+
+&lt;p&gt;In this tutorial, we will dim the overall IP address as “192.168.3.6”.&lt;/p&gt;
+
+&lt;p&gt;The Master vm will have an IP address of “192.168.3.100”.&lt;/p&gt;
+
+&lt;p&gt;The Slave01 vm will have an IP address of “192.168.3.101”.&lt;/p&gt;
+
+&lt;p&gt;Turn off all vm and VMWare Fusion.&lt;/p&gt;
+
+&lt;p&gt;To change the IP address for VMWare, use the following command:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;sudo vim /Library/Preferences/VMWare Fusion/networking
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;In vim, change the value of VNET_8_HOSTONLY_SUBNET to “192.168.3.6”.&lt;/p&gt;
+
+&lt;p&gt;Restart VMWare Fusion.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://blog.csdn.net/seven_zhao/article/details/43406289&quot; target=&quot;_blank&quot;&gt;This blog (in Chinese)&lt;/a&gt; can be used for reference regarding these settings.&lt;/p&gt;
+
+&lt;h3 id=&quot;configure-machine-ip-and-network&quot;&gt;Configure Machine IP and Network&lt;/h3&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Start both machines you created above.&lt;/li&gt;
+  &lt;li&gt;To login, just use “root” username.&lt;/li&gt;
+  &lt;li&gt;In “Master” vm, go to System &amp;gt; Administration &amp;gt; Network.&lt;/li&gt;
+  &lt;li&gt;Double-click on the only (if more than one entry, delete one) item under “Devices” tab.&lt;/li&gt;
+  &lt;li&gt;Check “Statically set IP addresses”.&lt;/li&gt;
+  &lt;li&gt;Change the “Address” value to “192.168.3.100”. Change the “Subnet mask” value to “255.255.255.0”.&lt;/li&gt;
+  &lt;li&gt;Click OK (bottom right).&lt;/li&gt;
+  &lt;li&gt;Click “Activate”.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;Repeat step 3 to 8 for “Slave01” vm, this time set Address to “192.168.3.101”.&lt;/p&gt;
+
+&lt;p&gt;When all the steps are done correctly, you should be able to ping your two vms using the IP address you configured.&lt;/p&gt;
+
+&lt;h3 id=&quot;configure-machine-names&quot;&gt;Configure Machine Names&lt;/h3&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;SSH into both vms. I used &lt;a href=&quot;https://github.com/fitztrev/shuttle&quot; target=&quot;_blank&quot;&gt;Shuttle&lt;/a&gt; since I cannot find xshell on Mac.
+ 1.1 To SSH into a vm, simply open Shuttle (or terminal), then type in “ssh username@host”.
+ 1.2 For example, to login to master using “root” user:&lt;/p&gt;
+
+    &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; ssh root@192.168.3.100
+&lt;/code&gt;&lt;/pre&gt;
+    &lt;/div&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Modify hostname:
+ 2.1 After ssh into the machine, open network config file&lt;/p&gt;
+
+    &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; vim /etc/sysconfig/network
+&lt;/code&gt;&lt;/pre&gt;
+    &lt;/div&gt;
+
+    &lt;p&gt;2.2 Modify “HOSTNAME” attribute, set it to the correct name.
+ 2.3 I set Master machine (192.168.3.100) as “master”. Slave machine (192.168.3.101) as “slave01”.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Disable firewall. This is disabled during vm installation, but you can always disable it by:&lt;/p&gt;
+
+    &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; vim /etc/sysconfig/selinux
+&lt;/code&gt;&lt;/pre&gt;
+    &lt;/div&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Config host name so master and slave01 can communicate with each other.
+ 4.1 On both vms, modify “hosts” file:&lt;/p&gt;
+
+    &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; vim /etc/hosts
+&lt;/code&gt;&lt;/pre&gt;
+    &lt;/div&gt;
+
+    &lt;p&gt;4.2 Appending the following the the end of the file:&lt;/p&gt;
+
+    &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; 192.168.3.100 master
+ 192.168.3.101 slave01
+&lt;/code&gt;&lt;/pre&gt;
+    &lt;/div&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Reboot both vms.&lt;/p&gt;
+
+    &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; reboot
+&lt;/code&gt;&lt;/pre&gt;
+    &lt;/div&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;If everything works alright, you should be able to ssh into master and then two changes will happen:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Instead of “root@192.168.3.100” in the head of the command line, it will have “root@master”.&lt;/li&gt;
+  &lt;li&gt;If you ping slave01, you should be able to do that.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;Same applies to slave01.&lt;/p&gt;
+
+&lt;h2 id=&quot;hadoop-cluster-creation&quot;&gt;Hadoop Cluster Creation&lt;/h2&gt;
+
+&lt;h3 id=&quot;install-java&quot;&gt;Install Java&lt;/h3&gt;
+
+&lt;p&gt;In order to install Java, we need to upload the Java installation package from local computer (my mac) to both virtual machines. To do that, we need to enable ftp server first.&lt;/p&gt;
+
+&lt;h4 id=&quot;enable-ftp-server&quot;&gt;Enable FTP Server&lt;/h4&gt;
+
+&lt;p&gt;To enable ftp server, ssh into both master and slave01 machines, and then try:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;/etc/init.d/vsftpd restart
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;The shutting down of the ftp server may fail once, but just try serval times until both shutting down and restart have “OK” status.&lt;/p&gt;
+
+&lt;p&gt;We need to create a folder for uploading files from local to vm (both vms):&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;mkdir installer
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;h4 id=&quot;upload-installation-file-to-vms&quot;&gt;Upload Installation File to VMs&lt;/h4&gt;
+
+&lt;p&gt;To upload any file from local machine to the configured VMs, I used &lt;a href=&quot;https://filezilla-project.org/download.php?platform=osx&quot; target=&quot;_blank&quot;&gt;FileZilla for OS X&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;You need to config the connections to the two vms via Site Manager, the port number is 22 and the connection type is recommended as SFTP:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;assets/FileZilla_Conig.jpg&quot; alt=&quot;FTP Connection Config&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Once config is done, connect to both vms within FileZilla.&lt;/p&gt;
+
+&lt;p&gt;In my previous article on hadoop installation, I choose &lt;a href=&quot;http://www.oracle.com/technetwork/java/javase/downloads/java-archive-downloads-javase7-521261.html#jdk-7u80-oth-JPR&quot; target=&quot;_blank&quot;&gt;JDK 1.7&lt;/a&gt; as the Java version. This time I will choose the same thing, however using Linux 64-bit version.&lt;/p&gt;
+
+&lt;p&gt;Now need to upload the JDK to the two vms via FileZilla. Just use the FileZilla GUI to do it (you need to upload the file under the newly created “/root/installer/” folder).&lt;/p&gt;
+
+&lt;h4 id=&quot;install-jdk&quot;&gt;Install JDK&lt;/h4&gt;
+
+&lt;p&gt;After finished uploading, cd into /root/installer, then:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;rpm -ivh jdk-7u80-linux-x64.rpm
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;You should be able to verify your JDK version:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;javac -version
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;h3 id=&quot;create-hadoop-users&quot;&gt;Create Hadoop Users&lt;/h3&gt;
+
+&lt;p&gt;Create two new tabs in terminal, ssh into master and slave01 respectively. Create a username “hadoop”, and then switch to&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;useradd hadoop
+passwd hadoop
+&lt;span class=&quot;c&quot;&gt;# Input your password here and retype it according to prompt&lt;/span&gt;
+su - hadoop
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Create “installer” directory for user “hadoop”&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;mkdir installer
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;h3 id=&quot;config-ssh-equivalent&quot;&gt;Config SSH Equivalent&lt;/h3&gt;
+
+&lt;p&gt;Config ssh equivalent for both vms. The purpose of setting ssh equivalent for these two machines is to let you ssh into the two vms without having to type the password.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ssh-keygen -t rsa
+&lt;span class=&quot;c&quot;&gt;# Press &quot;Enter&quot; for 3 times.&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Config id_rsa.pub for “master”:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nb&quot;&gt;cd&lt;/span&gt; .ssh/
+authorized_keys
+&lt;span class=&quot;c&quot;&gt;# You will see authorized_keys file generated in this directory if you want to&lt;/span&gt;
+ls
+scp authorized_keys slave01:~/.ssh/
+&lt;span class=&quot;c&quot;&gt;# Enter your password for hadoop user on &quot;slave01&quot;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;The “authorized_keys” file will be added to slave01 under hadoop/.ssh/ folder.&lt;/p&gt;
+
+&lt;p&gt;Go to “slave01” ssh terminal, write the copied id_rsa.pub file into authoized_keys file. Then send it back to “master”, so the “authorized_keys” file will also have the “slave01” config content.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;cat id_rsa.pub &amp;gt;&amp;gt; authorized_keys
+&lt;span class=&quot;c&quot;&gt;# View the modified authorized_keys file if you want to&lt;/span&gt;
+cat authorized_keys
+scp authorized_keys master:~/.ssh/
+&lt;span class=&quot;c&quot;&gt;# Enter your password for hadoop user on &quot;master&quot;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Modify the privilege of the authorized_keys file on both vms:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;chmod 600 authorized_keys
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;This way you can directly ssh into “master” and “slave01” without having to type passowrd everythime. However, since you have only configured ssh equivalent for “hadoop” user, you can only ssh into both machines when using “hadoop”. You “root” user won’t be able to have that function.&lt;/p&gt;
+
+&lt;h3 id=&quot;hadoop-installation&quot;&gt;Hadoop Installation&lt;/h3&gt;
+
+&lt;p&gt;Download hadoop installation tar file from &lt;a href=&quot;http://mirror.stjschools.org/public/apache/hadoop/common/hadoop-2.6.5/&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;, I used hadoop 2.6.5 just to be safe.&lt;/p&gt;
+
+&lt;p&gt;Use FileZilla to connect to both vms using “hadoop” user (not root), and upload the hadoop installation file to the “installer” folder.&lt;/p&gt;
+
+&lt;p&gt;In “master”, unzip the tar file and rename it “hadoop2”&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nb&quot;&gt;cd &lt;/span&gt;installer
+tar -zxvf hadoop-2.6.5.tar.gz
+mv hadoop-2.6.5 hadoop2
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;h3 id=&quot;config-hadoop-environment-variables-on-vms&quot;&gt;Config Hadoop Environment Variables on VMs&lt;/h3&gt;
+
+&lt;p&gt;Similar to my first article on hadoop installation on Mac, here we need to config some hadoop environment variables:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;# Go back to hadoop user root&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;cd
+&lt;/span&gt;vim .bashrc
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;In vim, under “User specific aliases and functions”, type in this:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nb&quot;&gt;export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;JAVA_HOME&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/usr/java/jdk1.7.0_80
+&lt;span class=&quot;nb&quot;&gt;export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;HADOOP_HOME&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/home/hadoop/installer/hadoop2
+&lt;span class=&quot;nb&quot;&gt;export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;HADOOP_COMMON_LIB_NATIVE_DIR&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;HADOOP_HOME&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt;/lib/native
+&lt;span class=&quot;nb&quot;&gt;export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;HADOOP_OPTS&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;-Djava.library.path=&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$HADOOP_HOME&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;/lib&quot;&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# Append Java lib and Hadoop lib to CLASSPATH&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;CLASSPATH&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$CLASSPATH&lt;/span&gt;:&lt;span class=&quot;nv&quot;&gt;$JAVA_HOME&lt;/span&gt;/lib:&lt;span class=&quot;nv&quot;&gt;$HADOOP_HOME&lt;/span&gt;/lib
+&lt;span class=&quot;c&quot;&gt;# Append Java bin and Hadoop bin/sbin to PATH&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;PATH&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$PATH&lt;/span&gt;:&lt;span class=&quot;nv&quot;&gt;$JAVA_HOME&lt;/span&gt;/bin:&lt;span class=&quot;nv&quot;&gt;$HADOOP_HOME&lt;/span&gt;/bin:&lt;span class=&quot;nv&quot;&gt;$HADOOP_HOME&lt;/span&gt;/sbin
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;JAVA_HOME is where your jdk is installed and HADOOP_HOME is where your hadoop is just installed.&lt;/p&gt;
+
+&lt;p&gt;After configuring .bashrc file, make it effective immediately (without restarting the vm):&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;. .bashrc
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Copy the configured .bashrc file to “slave01” root directory using scp:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;scp .bashrc slave01:~
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Also enable the newly copied .bashrc file on slave01.&lt;/p&gt;
+
+&lt;h3 id=&quot;config-hadoop-application&quot;&gt;Config Hadoop Application&lt;/h3&gt;
+
+&lt;h4 id=&quot;config-hadoop-environment&quot;&gt;Config Hadoop Environment&lt;/h4&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nb&quot;&gt;cd&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$HADOOP_HOME&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;cd &lt;/span&gt;etc/hadoop
+vim hadoop-env.sh
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;In vim, delete “export JAVA_HOME” line, replace it with:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nb&quot;&gt;export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;JAVA_HOME&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/usr/java/jdk1.7.0_80
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;There is a “for” loop, after which you will find “#export HADOOP_HEAPSIZE=”. Make it like this:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nb&quot;&gt;export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;HADOOP_HEAPSIZE&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;100
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;h4 id=&quot;config-yarn-environment&quot;&gt;Config YARN Environment&lt;/h4&gt;
+
+&lt;p&gt;Leave vim and now configure yarn-evn.sh:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;vim yarn-evn.sh
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Set JAVA_HOME attribute in the first uncommented row:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nb&quot;&gt;export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;JAVA_HOME&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/usr/java/jdk1.7.0_80
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Go down to find one line:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;JAVA_HEAP_MAX&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;-Xmx1000m
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Change it to this:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;JAVA_HEAP_MAX&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;-Xmx300m
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;There is also a line under this line saying:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;#YARN_HEAPSIZE=1000&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Uncomment this line and make “1000” to 100.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;YARN_HEAPSIZE&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;100
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Save and quit vim.&lt;/p&gt;
+
+&lt;h4 id=&quot;config-mapreduce-environment&quot;&gt;Config MapReduce Environment&lt;/h4&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;vim mapred-env.sh
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Uncomment the JAVA_HOME line and make the same Java home change. Also in the next line make “1000” to “100”.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nb&quot;&gt;export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;JAVA_HOME&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/usr/java/jdk1.7.0_80
+&lt;span class=&quot;nb&quot;&gt;export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;HADOOP_JOB_HISTORYSERVER_HEAPSIZE&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;100
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Save and quit vim.&lt;/p&gt;
+
+&lt;h4 id=&quot;config-slaves&quot;&gt;Config Slaves&lt;/h4&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;vim slaves
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;There will be only one line in the “slaves” file: localhost. Delete it and replace it with “slave01”. That is because we configured the only slave machine name as “slave01” (step 2.3 in previous section). After configuration the “slaves” file should look like this:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;slave01
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;h4 id=&quot;config-core-sitexml&quot;&gt;Config core-site.xml&lt;/h4&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;vim core-site.xml
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Replace the &lt;configuration&gt;&lt;/configuration&gt; part with the following. This is to configure the default file system and the temp dir location.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&amp;lt;configuration&amp;gt;
+        &amp;lt;property&amp;gt;
+                &amp;lt;name&amp;gt;fs.defaultFS&amp;lt;/name&amp;gt;
+                &amp;lt;value&amp;gt;hdfs://master:9000&amp;lt;/value&amp;gt;
+        &amp;lt;/property&amp;gt;
+        &amp;lt;property&amp;gt;
+                &amp;lt;name&amp;gt;hadoop.tmp.dir&amp;lt;/name&amp;gt;
+                &amp;lt;value&amp;gt;/home/hadoop/tmp&amp;lt;/value&amp;gt;
+        &amp;lt;/property&amp;gt;
+&amp;lt;/configuration&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Save and exit vim. In the config file we specified a temp folder, “tmp”, directly under the hadoop user folder. So we need to create the physical folder in the vms as well. The easiest way to do this is:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;SSH into master using hadoop as the user.&lt;/li&gt;
+  &lt;li&gt;Make sure you are in “hadoop” home folder.
+3.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;mkdir tmp
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Also do the same thing for “slave01”.&lt;/p&gt;
+
+&lt;h4 id=&quot;config-hdfs-sitexml&quot;&gt;Config hdfs-site.xml&lt;/h4&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;vim hdfs-site.xml
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Replace the &lt;configuration&gt;&lt;/configuration&gt; with the following:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&amp;lt;configuration&amp;gt;
+        &amp;lt;property&amp;gt;
+                &amp;lt;name&amp;gt;dfs.namenode.secondary.http-address&amp;lt;/name&amp;gt;
+                &amp;lt;value&amp;gt;master:50090&amp;lt;/value&amp;gt;
+        &amp;lt;/property&amp;gt;
+        
+        &amp;lt;property&amp;gt;
+                &amp;lt;name&amp;gt;dfs.namenode.name.dir&amp;lt;/name&amp;gt;
+                &amp;lt;value&amp;gt;/home/hadoop/data/dfs/name&amp;lt;/value&amp;gt;
+        &amp;lt;/property&amp;gt;
+        
+        &amp;lt;property&amp;gt;
+                &amp;lt;name&amp;gt;dfs.datanode.data.dir&amp;lt;/name&amp;gt;
+                &amp;lt;value&amp;gt;/home/hadoop/data/dfs/data&amp;lt;/value&amp;gt;
+        &amp;lt;/property&amp;gt;
+
+        &amp;lt;property&amp;gt;
+                &amp;lt;name&amp;gt;dfs.replication&amp;lt;/name&amp;gt;
+                &amp;lt;value&amp;gt;1&amp;lt;/value&amp;gt;
+        &amp;lt;/property&amp;gt;
+
+        &amp;lt;property&amp;gt;
+                &amp;lt;name&amp;gt;dfs.webhdfs.enabled&amp;lt;/name&amp;gt;
+                &amp;lt;value&amp;gt;true&amp;lt;/value&amp;gt;
+        &amp;lt;/property&amp;gt;
+&amp;lt;/configuration&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;The above config specifies the following:&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;Secondary name node address&lt;/li&gt;
+  &lt;li&gt;Name node directory&lt;/li&gt;
+  &lt;li&gt;Data node directory&lt;/li&gt;
+  &lt;li&gt;Number of replication of data (just 1 replication)&lt;/li&gt;
+  &lt;li&gt;Enable WebHDFS&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;You also need to create the above specified folders (name node dir and data node dir) for both “master” and “slave01”, under hadoop user folder.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;mkdir -p data/dfs/data
+mkdir -p data/dfs/name
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;h4 id=&quot;config-mapred-sitexml&quot;&gt;Config mapred-site.xml&lt;/h4&gt;
+
+&lt;p&gt;In “master”, copy mapred-site.xml.template to the same directory and name it mapred-site.xml:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;cp mapred-site.xml.template mapred-site.xml
+vim mapred-site.xml
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Replace &lt;configuration&gt;&lt;/configuration&gt; with the following:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&amp;lt;configuration&amp;gt;
+        &amp;lt;property&amp;gt;
+                &amp;lt;name&amp;gt;mapreduce.framework.name&amp;lt;/name&amp;gt;
+                &amp;lt;value&amp;gt;yarn&amp;lt;/value&amp;gt;
+        &amp;lt;/property&amp;gt;
+
+        &amp;lt;property&amp;gt;
+                &amp;lt;name&amp;gt;mapreduce.jobhistory.address&amp;lt;/name&amp;gt;
+                &amp;lt;value&amp;gt;master:10020&amp;lt;/value&amp;gt;
+        &amp;lt;/property&amp;gt;
+
+        &amp;lt;property&amp;gt;
+                &amp;lt;name&amp;gt;mapreduce.jobhistory.webapp.address&amp;lt;/name&amp;gt;
+                &amp;lt;value&amp;gt;master:19888&amp;lt;/value&amp;gt;
+        &amp;lt;/property&amp;gt;
+
+        &amp;lt;property&amp;gt;
+                &amp;lt;name&amp;gt;mapreduce.map.memory.mb&amp;lt;/name&amp;gt;
+                &amp;lt;value&amp;gt;300&amp;lt;/value&amp;gt;
+        &amp;lt;/property&amp;gt;
+
+        &amp;lt;property&amp;gt;
+                &amp;lt;name&amp;gt;mapreduce.reduce.memory.mb&amp;lt;/name&amp;gt;
+                &amp;lt;value&amp;gt;300&amp;lt;/value&amp;gt;
+        &amp;lt;/property&amp;gt;
+
+        &amp;lt;property&amp;gt;
+                &amp;lt;name&amp;gt;yarn.app.mapreduce.am.resource.mb&amp;lt;/name&amp;gt;
+                &amp;lt;value&amp;gt;100&amp;lt;/value&amp;gt;
+        &amp;lt;/property&amp;gt;
+&amp;lt;/configuration&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;In above file we configured the following:&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;Set the resource manager for MapReduce as YARN&lt;/li&gt;
+  &lt;li&gt;Set the job history address&lt;/li&gt;
+  &lt;li&gt;Set the job history web app address&lt;/li&gt;
+  &lt;li&gt;Set the memory allocated for a map task to be 300 MB&lt;/li&gt;
+  &lt;li&gt;Set the memory allocated for a reduce task to be 300 MB&lt;/li&gt;
+  &lt;li&gt;Set the memory for YARN over MapReduce to be 100 MB&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h4 id=&quot;config-yarn-sitexml&quot;&gt;Config yarn-site.xml&lt;/h4&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;vim yarn-site.xml
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;configuration&gt;
+        &lt;property&gt;
+                &lt;name&gt;yarn.nodemanager.aux-services&lt;/name&gt;
+                &lt;value&gt;mapreduce_shuffle&lt;/value&gt;
+        &lt;/property&gt;
+
+        &lt;property&gt;
+                &lt;description&gt;The host name of the RM.&lt;/description&gt;
+                &lt;name&gt;yarn.resourcemanager.hostname&lt;/name&gt;
+                &lt;value&gt;master&lt;/value&gt;
+        &lt;/property&gt;
+
+        &lt;property&gt;
+                &lt;description&gt;The address of the applications manager interface in the RM.&lt;/description&gt;
+                &lt;name&gt;yarn.resourcemanager.address&lt;/name&gt;
+                &lt;value&gt;${yarn.resourcemanager.hostname}:8032&lt;/value&gt;
+        &lt;/property&gt;
+
+        &lt;property&gt;
+                &lt;description&gt;The address of the scheduler interface.&lt;/description&gt;
+                &lt;name&gt;yarn.resourcemanager.scheduler.address&lt;/name&gt;
+                &lt;value&gt;${yarn.resourcemanager.hostname}:8030&lt;/value&gt;
+        &lt;/property&gt;
+
+        &lt;property&gt;
+                &lt;description&gt;The http address of the RM web application.&lt;/description&gt;
+                &lt;name&gt;yarn.resourcemanager.webapp.address&lt;/name&gt;
+                &lt;value&gt;${yarn.resourcemanager.hostname}:8088&lt;/value&gt;
+        &lt;/property&gt;
+
+        &lt;property&gt;
+                &lt;description&gt;The https address of the RM web application.&lt;/description&gt;
+                &lt;name&gt;yarn.resourcemanager.webapp.https.address&lt;/name&gt;
+                &lt;value&gt;${yarn.resourcemanager.hostname}:8090&lt;/value&gt;
+        &lt;/property&gt;
+        
+        &lt;property&gt;
+                &lt;name&gt;yarn.resourcemanager.resource-tracker.address&lt;/name&gt;
+                &lt;value&gt;${yarn.resourcemanager.hostname}:8031&lt;/value&gt;
+        &lt;/property&gt;
+        
+        &lt;property&gt;
+                &lt;description&gt;The address of the RM admin interface.&lt;/description&gt;
+                &lt;name&gt;yarn.resourcemanager.admin.address&lt;/name&gt;
+                &lt;value&gt;${yarn.resourcemanager.hostname}:8033&lt;/value&gt;
+        &lt;/property&gt;
+        
+        &lt;property&gt;
+                &lt;description&gt;The minimum allocation for every container request at the RM, in MBs. Memory requests lower than this won't take effect, and the specified value will get allocated at minimum.&lt;/description&gt;
+                &lt;name&gt;yarn.scheduler.minimum-allocation-mb&lt;/name&gt;
+                &lt;value&gt;300&lt;/value&gt;
+        &lt;/property&gt;
+        
+        &lt;property&gt;
+                &lt;description&gt;The maximum allocation for every container request at the RM, in MBs. Memory requests higher than this won't take effect, and will get capped to this value.&lt;/description&gt;
+                &lt;name&gt;yarn.scheduler.maximum-allocation-mb&lt;/name&gt;
+                &lt;value&gt;1024&lt;/value&gt;
+        &lt;/property&gt;
+        
+        &lt;property&gt;
+                &lt;description&gt;Ratio between virtual memory to physical memory when setting memory limits for containers. Container allocations are expressed in terms of physical memory, and virtual memory usage is allowed to exceed this allocation by this ratio.&lt;/description&gt;
+                &lt;name&gt;yarn.nodemanager.vmem-pmem-ratio&lt;/name&gt;
+                &lt;value&gt;6.1&lt;/value&gt;
+        &lt;/property&gt;
+&lt;/configuration&gt;
+
+&lt;p&gt;You are done with hadoop “master” configuration!&lt;/p&gt;
+
+&lt;h4 id=&quot;config-hadoop-on-slave01&quot;&gt;Config Hadoop on “slave01”&lt;/h4&gt;
+
+&lt;p&gt;Because you haven’t done anything (besides creating some empty folders) on “slave01” yet, you need to directly copy your configured “hadoop2” folder from “master” to “slave01”.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;# This is &quot;cd [space]&quot; to go back to &quot;master&quot; hadoop user root&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;cd 
+cd &lt;/span&gt;installer
+scp -r hadoop2 slave01:~/installer/
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;While the files are being copied, we can make the environment config effective by going to “master” and run:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;. .bashrc
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;After file copy, run the same command for “slave01”.&lt;/p&gt;
+
+&lt;h4 id=&quot;format-hadoop&quot;&gt;Format Hadoop&lt;/h4&gt;
+
+&lt;p&gt;Go to ssh “master”, run the following format command to format the namenode.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;hadoop namenode -format
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Now start HDFS:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;start-dfs.sh
+start-yarn.sh
+&lt;span class=&quot;c&quot;&gt;# To see your processes:&lt;/span&gt;
+jps
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;You should have 4 items in there: Jps, Namenode, SecondaryNamenode, ResourceManager.
+In “slave01”, run the same command and do “jps”, you should have DataNode, NodeManager and Jps in there.&lt;/p&gt;
+
+&lt;p&gt;If you don’t have secondary namenode, check your core-site.xml and delete (rm -rf *) the content of data/dfs/data and data/dfs/name (corresponding to datanode and namenode) folder, and stop and reformat hadoop.&lt;/p&gt;
+
+&lt;h3 id=&quot;test-hadoop&quot;&gt;Test Hadoop&lt;/h3&gt;
+
+&lt;h4 id=&quot;create-test-file&quot;&gt;Create Test File&lt;/h4&gt;
+
+&lt;p&gt;Create a random text file, in this case, we will name it 1.txt. The content can be:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;hadoop hadoop spark storm
+java java c C# c
+java spark
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Put it into hdfs /data/wordcount folder&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;hdfs dfs -mkdir /data
+hdfs dfs -mkdir /data/wordcount
+hdfs dfs -put 1.txt /data/wordcount
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Run hadoop command to create folders for test:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nb&quot;&gt;cd&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$HADOOP_HOME&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;cd &lt;/span&gt;share/hadoop/mapreduce/
+&lt;span class=&quot;c&quot;&gt;# Invoke &quot;wordcount&quot; function in the example jar file.&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# &quot;/data/wordcount&quot; folder is the hdfs input folder (every file will be read)&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# &quot;/data/wordcount/output&quot; is the output folder: it cannot exist before running this command&lt;/span&gt;
+hadoop jar hadoop-mapreduce-examples-2.6.5.jar wordcount /data/wordcount /data/wordcount/output
+
+&lt;span class=&quot;c&quot;&gt;# To view result after running&lt;/span&gt;
+hdfs dfs -cat /data/wordcount/output/&lt;span class=&quot;k&quot;&gt;*&lt;/span&gt;
+
+&lt;span class=&quot;c&quot;&gt;# To view result file names&lt;/span&gt;
+hdfs dfs -ls /data/wordcount/output
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Congrats! After so long you have finally installed and configured your hadoop application on a master and slave machine, and get your example code running. If you can successfully get the mapreduce example to run it means everything is correct for you.&lt;/p&gt;
+
+&lt;p&gt;Now the only thing left is to create snapshots of both your machines so you can rollback to the initiation state if you encountered errors in the future (hopefully that won’t happen).&lt;/p&gt;
+</content>
+   </entry>
+   
+   <entry>
+     <title>Apache Flume</title>
+     <link href="http://localhost:4000/hadoop/2017/06/04/apache-flume-hadoop.html"/>
+     <updated>2017-06-04T16:00:00-04:00</updated>
+     <id>http://localhost:4000/hadoop/2017/06/04/apache-flume-hadoop</id>
+     <content type="html">&lt;p&gt;When you are dealing with structured data, such as RDBMS or tables, you can directly use SQL to query them. However in big data world, you can never expect data to have a uniform structure, or even clean structure. That’s why hadoop’s “schema on read” is such a powerful capability.&lt;/p&gt;
+
+&lt;p&gt;In this chapter, I will learn a new tool from Apache to ingest stream data: &lt;a href=&quot;https://hortonworks.com/apache/flume/&quot; target=&quot;_blank&quot;&gt;Flume&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Flume is one of the tools that accepts stream data (such as application logs (Google search logs, etc.), machine or sensor data (Internet of Things), geographic locations (GeoRSS), etc.) and (garenteed) transfer them into HDFS for future analysis (using Hive for HQL, for example).&lt;/p&gt;
+
+</content>
+   </entry>
+   
+   <entry>
+     <title>A High Level Experiment with Hadoop (Cloudera)</title>
+     <link href="http://localhost:4000/hadoop/2017/05/18/a-high-level-experiment-with-hadoop-cloudera.html"/>
+     <updated>2017-05-18T19:00:00-04:00</updated>
+     <id>http://localhost:4000/hadoop/2017/05/18/a-high-level-experiment-with-hadoop-cloudera</id>
+     <content type="html">&lt;p&gt;When following the book led me to a place where I didn’t know how to create a hadoop project (the eclipse comment in the last post didn’t seem to create me anything in my project folder), I decided to give a pre-configured machine a try. Maybe experiencing with a high level tour can help me better understand the hadoop usage, then I can switch back to basic configurations.&lt;/p&gt;
+
+&lt;p&gt;I had the following items installed/downloaded:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;VMWare Fusion&lt;/li&gt;
+  &lt;li&gt;Virtual machine from &lt;a href=&quot;https://downloads.cloudera.com/demo_vm/virtualbox/cloudera-quickstart-vm-5.4.2-0-virtualbox.zip&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;So I started the VM (Linux I think) and it already has hadoop as well as other components configured for me, including:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Hadoop 2.6.0 (cdh5.4.2)&lt;/li&gt;
+  &lt;li&gt;Java 1.7.0_67 64 bit&lt;/li&gt;
+  &lt;li&gt;Sqoop (SQL to Hadoop tool, transfer data from RDBMS to hadoop data type)&lt;/li&gt;
+  &lt;li&gt;Impala (Cloudera’s hadoop-like table management/querying tool)&lt;/li&gt;
+  &lt;li&gt;Apache Spark&lt;/li&gt;
+  &lt;li&gt;MySQL&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;First, I tried to export 6 tables from MySQL into HDFS by running the following commands in terminal. We have 6 tables to export:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;categories&lt;/li&gt;
+  &lt;li&gt;customers&lt;/li&gt;
+  &lt;li&gt;departments&lt;/li&gt;
+  &lt;li&gt;order_items (including product ID, quantity and total price)&lt;/li&gt;
+  &lt;li&gt;orders (including multiple order_items)&lt;/li&gt;
+  &lt;li&gt;products (product ID and product name)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;sqoop import-all-tables &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+-m 1 &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+--connect jdbc:mysql://quickstart:3306/retail_db &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+--username&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;retail_dba &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+--password&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;cloudera &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+--compression-codec&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;snappy &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+--as-avrodatafile &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+--warehouse-dir&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/user/hive/warehouse
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;What the above command does:&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;Connect to MySQL database using Sqoop (located in //quickstart:3306/retail_db)&lt;/li&gt;
+  &lt;li&gt;Export all the tables within the DB into hadoop avro format. This will also create all the schema files (*.avsc), which I will cover later.&lt;/li&gt;
+  &lt;li&gt;Specify the output directory to /user/hive/warehouse of HDFS.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;Then I can verify the exported file in HDFS by running things like:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;hadoop fs -ls /user/hive/warehouse/
+hadoop fs -ls /user/hive/warehouse/categories/
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;You can also verify the avro schema files (one for each exported table) by:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ls -l &lt;span class=&quot;k&quot;&gt;*&lt;/span&gt;.avsc
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Now we need to move the created avro schema files into HDFS so we can further utilize Impala to create tables out of the exported hadoop files:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;sudo -u hdfs fs -mkdir /user/examples
+sudo -u hdfs fs -chmod +rw /user/examples
+hadoop fs -copyFromLocal ~/&lt;span class=&quot;k&quot;&gt;*&lt;/span&gt;.avsc /user/examples
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;This will create a folder “/user/examples” in HDFS and then copy the avro schema files in there. Note that these schema files can also be read by Hive, which will enable querying jobs by creating MapReduce processes.&lt;/p&gt;
+
+&lt;p&gt;Next, we will use Impala to import the 6 exported tables. Later on we will also experience Hive, which, when compared to Impala, is slower but more flexible. Impala reads directly from HDFS.&lt;/p&gt;
+
+&lt;p&gt;We will be using Hue to execute Impala queries. Simply go to &lt;a href=&quot;http://www.cornercycle.com/about/hybrid-trailer-rentals-pg60.htm&quot; target=&quot;_blank&quot;&gt;Hue’s page in Cloudera&lt;/a&gt;. In “Query Editors” &amp;gt; “Impala”, type in the following commands to make external tables out of HDFS. Note that the avro schema files will be used for Impala to read the data. There is no actual table created in here because Impala will read directly from the files:&lt;/p&gt;
+
+&lt;div class=&quot;language-sql highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;CREATE&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;EXTERNAL&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;TABLE&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;categories&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;STORED&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;AS&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;AVRO&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;LOCATION&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'hdfs:///user/hive/warehouse/categories'&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;TBLPROPERTIES&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'avro.schema.url'&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'hdfs://quickstart/user/examples/sqoop_import_categories.avsc'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;CREATE&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;EXTERNAL&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;TABLE&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;customers&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;STORED&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;AS&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;AVRO&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;LOCATION&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'hdfs:///user/hive/warehouse/customers'&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;TBLPROPERTIES&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'avro.schema.url'&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'hdfs://quickstart/user/examples/sqoop_import_customers.avsc'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;CREATE&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;EXTERNAL&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;TABLE&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;departments&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;STORED&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;AS&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;AVRO&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;LOCATION&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'hdfs:///user/hive/warehouse/departments'&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;TBLPROPERTIES&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'avro.schema.url'&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'hdfs://quickstart/user/examples/sqoop_import_departments.avsc'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;CREATE&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;EXTERNAL&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;TABLE&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;orders&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;STORED&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;AS&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;AVRO&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;LOCATION&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'hdfs:///user/hive/warehouse/orders'&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;TBLPROPERTIES&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'avro.schema.url'&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'hdfs://quickstart/user/examples/sqoop_import_orders.avsc'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;CREATE&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;EXTERNAL&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;TABLE&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;order_items&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;STORED&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;AS&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;AVRO&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;LOCATION&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'hdfs:///user/hive/warehouse/order_items'&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;TBLPROPERTIES&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'avro.schema.url'&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'hdfs://quickstart/user/examples/sqoop_import_order_items.avsc'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;CREATE&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;EXTERNAL&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;TABLE&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;products&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;STORED&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;AS&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;AVRO&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;LOCATION&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'hdfs:///user/hive/warehouse/products'&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;TBLPROPERTIES&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'avro.schema.url'&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'hdfs://quickstart/user/examples/sqoop_import_products.avsc'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;You can then run SQL against the external table in Impala, for example:&lt;/p&gt;
+
+&lt;div class=&quot;language-sql highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c1&quot;&gt;-- top 10 revenue generating products&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;select&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;product_id&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;product_name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;r&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;revenue&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;products&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;inner&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;join&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;select&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;oi&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;order_item_product_id&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;sum&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;cast&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;oi&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;order_item_subtotal&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;float&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;revenue&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;order_items&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;oi&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;inner&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;join&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;orders&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;o&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;on&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;oi&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;order_item_order_id&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;o&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;order_id&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;where&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;o&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;order_status&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'CANCELED'&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;and&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;o&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;order_status&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'SUSPECTED_FRAUD'&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;group&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;by&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;order_item_product_id&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;r&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;on&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;product_id&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;r&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;order_item_product_id&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;order&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;by&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;r&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;revenue&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;desc&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;limit&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;In the next article I will introduce a powerful “stream to HDFS” tool, Flume.&lt;/p&gt;
+</content>
+   </entry>
+   
+   <entry>
+     <title>Hadoop Project Setup</title>
+     <link href="http://localhost:4000/hadoop/2017/05/01/hadoop-project-setup.html"/>
+     <updated>2017-05-01T19:00:00-04:00</updated>
+     <id>http://localhost:4000/hadoop/2017/05/01/hadoop-project-setup</id>
+     <content type="html">&lt;p&gt;OK. I had been officially struggling for 3 days to setup the Eclipse environment just to make it work with the JDK I installed for hadoop, and I learned the lesson in a hard way.&lt;/p&gt;
+
+&lt;p&gt;Previously I stated in &lt;a href=&quot;hadoop-installation.html&quot; target=&quot;_blank&quot;&gt;this article&lt;/a&gt; that JDK 7 is needed, so I have to download the correct Eclipse version.&lt;/p&gt;
+
+&lt;p&gt;After struggling for so long time, including Eclipse cannot be opened error, extraction error, JVM version error, etc., I finally figured out this is the version that is working for my Mac:
+Elicpse Mars 2. To download it, click &lt;a href=&quot;https://www.eclipse.org/downloads/download.php?file=/technology/epp/downloads/release/mars/2/eclipse-java-mars-2-macosx-cocoa-x86_64.tar.gz&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;You can directly double click on the tar.gz file so the Eclipse application package will be extracted. I also modified the eclipse.ini file to specify the Java path (ini file located inside Eclipse package, to reveal it, right click on Eclipse &amp;gt; Show Package Conents &amp;gt; Contents &amp;gt; Eclipse &amp;gt; eclipse.ini). I append the following content before “-vmargs”:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;-vm
+/Library/Java/JavaVirtualMachines/jdk1.7.0_80.jdk/Contents/home/bin/java
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;In order to create my first MapReduce project (don’t know what it would be like at this moment), I need to have Maven installed on my Mac (yes, I am that far behind). To install Maven, I went to &lt;a href=&quot;http://maven.apache.org/download.cgi&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;. Then I downloaded the 3.5.0 version of the tar.gz file, and extract it to one of my Desktop folder (“/Users/jiadreamran/Desktop/Coding/maven/apache-maven-3.5.0”).&lt;/p&gt;
+
+&lt;p&gt;Just like any other tar.gz file, I need to register the maven command to PATH environment variable. So I modified my ~/.bash_profile to be like this:&lt;/p&gt;
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nb&quot;&gt;export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;JAVA_HOME&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/Library/Java/JavaVirtualMachines/jdk1.7.0_80.jdk/Contents/Home
+&lt;span class=&quot;nb&quot;&gt;export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;HADOOP_HOME&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/Users/jiadreamran/Desktop/hadoop/hadoop-2.7.3
+&lt;span class=&quot;nb&quot;&gt;export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;MAVEN_HOME&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/Users/jiadreamran/Desktop/Coding/maven/apache-maven-3.5.0
+&lt;span class=&quot;nb&quot;&gt;export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;PATH&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$PATH&lt;/span&gt;:&lt;span class=&quot;nv&quot;&gt;$HADOOP_HOME&lt;/span&gt;/bin:&lt;span class=&quot;nv&quot;&gt;$HADOOP_HOME&lt;/span&gt;/sbin:&lt;span class=&quot;nv&quot;&gt;$MAVEN_HOME&lt;/span&gt;/bin
+&lt;span class=&quot;nb&quot;&gt;export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;HADOOP_CONF_DIR&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/Users/jiadreamran/Desktop/hadoop/hadoop-2.7.3-jiadreamran-config
+
+&lt;span class=&quot;nb&quot;&gt;alias &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;hstart&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;/Users/jiadreamran/Desktop/hadoop/hadoop-2.7.3/sbin/start-dfs.sh;/Users/jiadreamran/Desktop/hadoop/hadoop-2.7.3/sbin/start-yarn.sh&quot;&lt;/span&gt;
+
+&lt;span class=&quot;nb&quot;&gt;alias &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;hstop&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;/Users/jiadreamran/Desktop/hadoop/hadoop-2.7.3/sbin/stop-yarn.sh;/Users/jiadreamran/Desktop/hadoop/hadoop-2.7.3/sbin/stop-dfs.sh&quot;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Note that I added “MAVEN_HOME” and append it (plus the “/bin” folder) to the end of the “PATH” variable.&lt;/p&gt;
+
+&lt;p&gt;If you successfully completed the above steps, the following command should give you the maven version:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;mvn -v
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Then I started to create the &lt;a href=&quot;https://github.com/jiadreamran/my_blog/blob/gh-pages/_posts/assets/pom.xml&quot; target=&quot;_blank&quot;&gt;pom.xml&lt;/a&gt; file. This pom file tells maven how to build the project and what would be the dependencies.&lt;/p&gt;
+
+&lt;p&gt;Then I simply point my terminal to the folder that contains the pom file, and run the following command to build the project using eclipse:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;mvn eclipse:eclipse -DdownloadSources&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;true&lt;/span&gt; -DdownloadJavadocs&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;true&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;After run the above command for 90 seconds, my project was successfully built. I didn’t notice any change in the folder containing the pom file but I still think something is happening. More on that later.&lt;/p&gt;
+</content>
+   </entry>
+   
+   <entry>
+     <title>File Copy in HDFS</title>
+     <link href="http://localhost:4000/hadoop/2017/03/14/file-copy-in-hadoop.html"/>
+     <updated>2017-03-14T19:51:25-04:00</updated>
+     <id>http://localhost:4000/hadoop/2017/03/14/file-copy-in-hadoop</id>
+     <content type="html">&lt;p&gt;So far I haven’t really figured out where hadoop copies a file from local to its HDFS.
+However here is what I understand: when a local file, for example, “myBlog.md” is copied to HDFS via the following command:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;hadoop fs -copyFromLocal /Users/jiadreamran/Blog/my_blog/_posts/myBlog.md copiedBlog.md
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;You actually won’t be able to find it anywhere by the name “copiedBlog.md” on the computer (?) because it will be represented in a HDFS block format. Also when you tried the same HDFS copy command again you will receive an error message telling you the file already exists in the HDFS (so we cannot have files named the same in HDFS??).&lt;/p&gt;
+
+&lt;p&gt;However when you copy the file from HDFS to your local using:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;hadoop fs -copyToLocal copiedBlog.md /Users/jiadreamran/Desktop/copyToLocal.md
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;The “copyToLocal.md” file will be on my desktop having the same content as “myBlog.md”.&lt;/p&gt;
+
+&lt;p&gt;I need to further investigate on how to specify HDFS default local drive and take a look at the copied format of the file. I searched via the hadoop log it looks like I can download it from /users/jiadreamran somewhere.&lt;/p&gt;
+
+&lt;p&gt;TODO: need to investigate on how to list files within my HDFS and how to delete them.&lt;/p&gt;
+</content>
+   </entry>
+   
+   <entry>
+     <title>Hadoop Configuaration Pseudodistributed Mode</title>
+     <link href="http://localhost:4000/hadoop/2017/03/12/hadoop-first-config-pseudodistributed.html"/>
+     <updated>2017-03-12T19:01:25-04:00</updated>
+     <id>http://localhost:4000/hadoop/2017/03/12/hadoop-first-config-pseudodistributed</id>
+     <content type="html">&lt;p&gt;So I begin to config my first Hadoop application.&lt;/p&gt;
+
+&lt;p&gt;Apparently there are three modes to run Hadoop:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;Standalone mode&lt;/li&gt;
+  &lt;li&gt;Pseudodistributed mode&lt;/li&gt;
+  &lt;li&gt;Fully distributed mode&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;The first mode merely runs Hadoop (without “daemons”, which at this time I think will be the processes that represents namenodes, datanodes, resource managers, node managers or history servers) in a single JVM. This will be ideal for developers (maybe I can get to this later when I need to practice developing something).&lt;/p&gt;
+
+&lt;p&gt;Pseudodistributed mode is the one I am aiming for today. It simulates a cluster on a small scale.&lt;/p&gt;
+
+&lt;p&gt;Fully distributed mode will be used in production, and the configuration of it will be massive, I think.&lt;/p&gt;
+
+&lt;p&gt;As described in the title, I will be using pseudodistributed mode (since now I am practicing on one machine).&lt;/p&gt;
+
+&lt;p&gt;The config files for such mode are located under &lt;code class=&quot;highlighter-rouge&quot;&gt;bash etc/hadoop&lt;/code&gt; folder in your hadoop installation directory. However, in order to distinguish the default (installed) configs with my customized config, I decided to copy all the config files within this folder to a new place and set an environment variable, &lt;b&gt;“HADOOP_CONF_DIR”&lt;/b&gt; for it.&lt;/p&gt;
+
+&lt;p&gt;So here is what I did:&lt;/p&gt;
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;vim ~/.bash_profile
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;This will open the bash_profile I created in my &lt;a href=&quot;hadoop-installation.html&quot; target=&quot;_blank&quot;&gt;previous article&lt;/a&gt;. There I just added the following into the “export” list:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nb&quot;&gt;export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;HADOOP_CONF_DIR&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/Users/jiadreamran/Desktop/hadoop/hadoop-2.7.3-jiadreamran-config
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;In the future when you create other instances of Hadoop, you can replace it with your own folder.&lt;/p&gt;
+
+&lt;p&gt;After copying all the files from etc/hadoop folder to my own config folder, I modifed the contents of the four following files:&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th&gt;Filename&lt;/th&gt;
+      &lt;th&gt;Description&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td&gt;core-site.xml&lt;/td&gt;
+      &lt;td&gt;Common configs of a hadoop site&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;hdfs-site.xml&lt;/td&gt;
+      &lt;td&gt;Config file for Hadoop Distributed Filesystem (HDFS)&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;mapred-site.xml&lt;/td&gt;
+      &lt;td&gt;Config file for MapReduce&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;yarn-default.xml&lt;/td&gt;
+      &lt;td&gt;Config file for YARN, &lt;b&gt;I don’t know what YARN is at this moment.&lt;/b&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;The actual pseudodistributed config is done by modifying the file contents as such:&lt;/p&gt;
+&lt;div class=&quot;language-xml highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;cp&quot;&gt;&amp;lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;&amp;lt;!-- core-site.xml --&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;configuration&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;property&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;name&amp;gt;&lt;/span&gt;fs.defaultFS&lt;span class=&quot;nt&quot;&gt;&amp;lt;/name&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;value&amp;gt;&lt;/span&gt;hdfs://localhost&lt;span class=&quot;nt&quot;&gt;&amp;lt;/value&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;/property&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;/configuration&amp;gt;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;language-xml highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;cp&quot;&gt;&amp;lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;&amp;lt;!--hdfs-site.xml--&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;configuration&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;property&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;name&amp;gt;&lt;/span&gt;dfs.replication&lt;span class=&quot;nt&quot;&gt;&amp;lt;/name&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;value&amp;gt;&lt;/span&gt;1&lt;span class=&quot;nt&quot;&gt;&amp;lt;/value&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;/property&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;/configuration&amp;gt;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;language-xml highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;cp&quot;&gt;&amp;lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;&amp;lt;!--mapred-site.xml--&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;configuration&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;property&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;name&amp;gt;&lt;/span&gt;mapreduce.framework.name&lt;span class=&quot;nt&quot;&gt;&amp;lt;/name&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;value&amp;gt;&lt;/span&gt;yarn&lt;span class=&quot;nt&quot;&gt;&amp;lt;/value&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;/property&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;/configuration&amp;gt;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;b&gt;For mapred-site.xml, there is no such file in the original config files. There is a file called mapred-site.xml.tempalte file, I am guessing this may be a master template? So for the time being, I created an emtpy mapred-site.xml file and populated with the content above.&lt;/b&gt;&lt;/p&gt;
+
+&lt;div class=&quot;language-xml highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;cp&quot;&gt;&amp;lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;&amp;lt;!--yarn-site.xml--&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;configuration&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;&amp;lt;!-- Site specific YARN configuration properties --&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;property&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;name&amp;gt;&lt;/span&gt;yarn.resourcemanager.hostname&lt;span class=&quot;nt&quot;&gt;&amp;lt;/name&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;value&amp;gt;&lt;/span&gt;localhost&lt;span class=&quot;nt&quot;&gt;&amp;lt;/value&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;/property&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;property&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;name&amp;gt;&lt;/span&gt;yarn.nodemanager.aux-services&lt;span class=&quot;nt&quot;&gt;&amp;lt;/name&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;value&amp;gt;&lt;/span&gt;mapreduce_shuffle&lt;span class=&quot;nt&quot;&gt;&amp;lt;/value&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;/property&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;/configuration&amp;gt;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Now it’s time to allow the application to ssh into my Mac. Before doing anything, I enabled the “Remote Login” (under  &amp;gt; System Preference &amp;gt; Sharing).&lt;/p&gt;
+
+&lt;p&gt;Not sure if you have ssh installed already on your Mac, if not:&lt;/p&gt;
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;sudo apt-get install ssh
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;To enable passwordless login, generate a new SSH key with an empty passpharse:&lt;/p&gt;
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ssh-keygen -t rsa -p &lt;span class=&quot;s1&quot;&gt;''&lt;/span&gt; -f ~/.ssh/id_rsa
+cat ~/.ssh/id_rsa.pub &amp;gt;&amp;gt; ~/.ssh/authorized_keys
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Test that you can connect with:&lt;/p&gt;
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ssh localhost
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;You should be able to login without having to input your password.&lt;/p&gt;
+
+&lt;p&gt;Before starting Hadoop HDFS, you should format the HDFS filesystem by running:&lt;/p&gt;
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;hdfs namenode -format
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Now we can start HDFS, YARN and MapReduce daemons:&lt;/p&gt;
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;start-dfs.sh
+start-yarn.sh
+mr-jobhistory-daemon.sh start historyserver
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Because we have already configurated the xml files (and created an environment variable for external configs), the HDFS should start properly.&lt;/p&gt;
+
+&lt;p&gt;To test whether the daemons started successfully by looking at the logfiles, go to:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;http://localhost:50070&quot; target=&quot;_blank&quot;&gt;http://localhost:50070&lt;/a&gt; for the namenode&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://localhost:8088&quot; target=&quot;_blank&quot;&gt;http://localhost:8088&lt;/a&gt; for the resource manager&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://localhost:50070&quot; target=&quot;_blank&quot;&gt;http://localhost:19888&lt;/a&gt; for the history server&lt;/li&gt;
+&lt;/ul&gt;
+</content>
+   </entry>
+   
+   <entry>
+     <title>Hadoop Installation on Mac OSX</title>
+     <link href="http://localhost:4000/hadoop/2017/03/12/hadoop-installation.html"/>
+     <updated>2017-03-12T11:00:00-04:00</updated>
+     <id>http://localhost:4000/hadoop/2017/03/12/hadoop-installation</id>
+     <content type="html">&lt;p&gt;Well as a beginner of UNIX programming, I decided to build this web site just for me to review the code and installation that I have been learning.&lt;/p&gt;
+
+&lt;p&gt;In this process, I decided to use Hadoop as my study material given that it will be the future trend to Linux and Java programming. If I can somehow master this technology, not only I will not fall behind the trend, I will also pick up some great things to do in my spare time. So let me begin this (hopefully interesting) journey.&lt;/p&gt;
+
+&lt;p&gt;First of all, Hadoop runs on UNIX/Linux or similar OS - I think. Therefore as a newbie to any UNIX/Linux programming, it is a pain for me to get used to its command system. I have been using cygwin for a short time in my work but I tend to avoid it whenever I can - a bad behavior inherited from Windows-spoiled developers. So I started to ask: how can I install a Linux virtual machine? This was quickly answered by some articles online: Mac OSX is built based on UNIX. This actually answers why in bay area so many people prefer to use Mac as their computers in Starbucks. So Mac OSX actually has its own terminal, similar to cygwin command prompt: all I need to do is to open Siri and say “open terminal”, as I don’t actually know where it is located in my computer :)&lt;/p&gt;
+
+&lt;p&gt;After all this being said, I googled and followed this article to install my first Hadoop application:
+&lt;a href=&quot;https://amodernstory.com/2014/09/23/installing-hadoop-on-mac-osx-yosemite/&quot; target=&quot;_blank&quot;&gt;https://amodernstory.com/2014/09/23/installing-hadoop-on-mac-osx-yosemite/&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;To some extent, this article may help people that are familiar with Hadoop or at least it’s their second time configuring the system. To a complete idot like me, it brought this problem:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;First of all, when installing HomeBrew, I was prompted to install Java JDK (of course!), which leads to a future problem that led me to uninstall everything: the Java version installed by default (1.8) is actually not supported as documented &lt;a href=&quot;https://wiki.apache.org/hadoop/HadoopJavaVersions&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;. So that is why everytime I tried to run a Hadoop start, it barked for “Could not create the Java Virtual Machine”. Lesson learned: install JDK 1.7 instead of 1.8.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;So I followed the offical guide: Hadoop the Definitive Guide by Tom White. Here are the steps:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;Do not use root user (if you don’t know what a root user is, it is by default disabled by Mac, so if you are new to Mac, you probably don’t have to worry about it).&lt;/li&gt;
+  &lt;li&gt;Install JDK 1.7. I am using MacOS Sierra 10.12.3, so the compatible JDK version I found is &lt;a href=&quot;http://www.oracle.com/technetwork/java/javase/downloads/java-archive-downloads-javase7-521261.html#jdk-7u80-oth-JPR&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;. I directly used the dmg file.&lt;/li&gt;
+  &lt;li&gt;The installed JDK is located in /Library/Java/JavaVirtualMachines/jdk1.7.0_80.jdk/Contents/Home&lt;/li&gt;
+  &lt;li&gt;Then I chose Hadoop 2.7.3 in &lt;a href=&quot;http://hadoop.apache.org/docs/r2.7.3/hadoop-project-dist/hadoop-common/SingleCluster.html#Download&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;.&lt;/li&gt;
+  &lt;li&gt;To install Hadoop, simply move the downloaded gzipped tar file to your desired location, and then run:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;tar xzf hadoop-x.y.z.tar.gz
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;After Hadoop has been successfully unzipped, I did two extra things: created environment variable on JAVA_HOME and created Hadoop command shortcuts. This is all done via the creation of bash_profile file. (A bash_profile file, according to my understanding, is like the environment variable in Windows, there you store locations of commonly used directories so whenever you enter a command, it will go through these directories to find it.)&lt;/li&gt;
+  &lt;li&gt;By default, I didn’t find the bash_profile file anywhere, so after intensive researching, I used the following command to create it:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;vim ~/.bash_profile
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;For people like me who have headaches with vim, here are some common usage of it:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;In a newly opened vim window, press “a” to begin edit.&lt;/li&gt;
+  &lt;li&gt;Press “Esc” to quit editing mode.&lt;/li&gt;
+  &lt;li&gt;In non-editing mode, hold “Shift” and press “Z” and “Z” to save your change and exit.&lt;/li&gt;
+  &lt;li&gt;In non-editing mode, hold “Shift” and press “Z” and “Q” to quit without saving.&lt;/li&gt;
+  &lt;li&gt;After creation of bash_profile file, here is what I put in there:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nb&quot;&gt;export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;JAVA_HOME&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/Library/Java/JavaVirtualMachines/jdk1.7.0_80.jdk/Contents/Home
+&lt;span class=&quot;nb&quot;&gt;export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;HADOOP_HOME&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;YOUR_EXTRACTED_HADOOP_FOLDER
+&lt;span class=&quot;c&quot;&gt;# Mine is /Users/jiadreamran/Desktop/hadoop/hadoop-2.7.3&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;PATH&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$PATH&lt;/span&gt;:&lt;span class=&quot;nv&quot;&gt;$HADOOP_HOME&lt;/span&gt;/bin:&lt;span class=&quot;nv&quot;&gt;$HADOOP_HOME&lt;/span&gt;/sbin
+
+&lt;span class=&quot;nb&quot;&gt;alias &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;hstart&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;YOUR_EXTRACTED_HADOOP_FOLDER/sbin/start-dfs.sh;YOUR_EXTRACTED_HADOOP_FOLDER/hadoop-2.7.3/sbin/start-yarn.sh&quot;&lt;/span&gt;
+
+&lt;span class=&quot;nb&quot;&gt;alias &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;hstop&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;YOUR_EXTRACTED_HADOOP_FOLDER/sbin/stop-yarn.sh;YOUR_EXTRACTED_HADOOP_FOLDER/sbin/stop-dfs.sh&quot;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;So Hadoop commands will be registered to your terminal (you need to restart the terminal for it to take effort). If everything goes well, when you run the following command:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;hadoop version
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;You should be able to see some output like:&lt;/p&gt;
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Hadoop 2.7.3
+Subversion https://git-wip-us.apache.org/repos/asf/hadoop.git -r baa91f7c6bc9cb92be5982de4719c1c8af91ccff
+Compiled by root on 2016-08-18T01:41Z
+Compiled with protoc 2.5.0
+From &lt;span class=&quot;nb&quot;&gt;source &lt;/span&gt;with checksum 2e4ce5f957ea4db193bce3734ff29ff4
+This &lt;span class=&quot;nb&quot;&gt;command &lt;/span&gt;was run using YOUR_EXTRACTED_HADOOP_FOLDER/share/hadoop/common/hadoop-common-2.7.3.jar
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;I stopped at Hadoop installation and haven’t done any configurations (to core-site.xml, hdfs-site.xml, yarn-site.xml etc).&lt;/p&gt;
+
+&lt;p&gt;The configuration part will be in my next blog.&lt;/p&gt;
+
+&lt;p&gt;That’s by far all I have gotten. Next time I will try to create a single cluster and see what I can run there.&lt;/p&gt;
+
+&lt;p&gt;Cheers.&lt;/p&gt;
+</content>
+   </entry>
+   
+
+</feed>

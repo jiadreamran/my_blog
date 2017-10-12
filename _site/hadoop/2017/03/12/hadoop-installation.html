@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Hadoop Installation on Mac OSX - 9leg</title>
+        <!-- meta -->
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+        <meta name="generator" content="Jekyll" />
+        <meta name="author" content="jiadreamran" />
+        <meta name="description" content="java,scala" />
+        <meta name="keywords" content="" />
+        <meta name="robots" content="index,nofollow" />
+        <!-- atom -->
+        <link rel="alternate" type="application/atom+xml" title="Recent Entries" href="http://localhost:4000/atom.xml" />
+        <link rel="shortcut icon" href="/images/shortcut.jpg" type="image/x-icon" />
+        <!-- font-awesome -->
+        <link href="http://cdn.bootcss.com/font-awesome/3.2.1/css/font-awesome.min.css" rel="stylesheet">
+        <!--<link href='http://fonts.useso.com/css?family=Spirax' rel='stylesheet' type='text/css'>-->
+        <link rel="stylesheet" href="http://localhost:4000/css/syntax.css">
+        <link rel="stylesheet" href="http://localhost:4000/css/main.css">
+        
+        
+
+    </head>
+    <body>
+        <div class="head fn-clear">
+            <div class="header">
+                <h1 class="logo">
+                    <a href="http://localhost:4000"><i class="icon-anchor"></i></a>
+                </h1>
+                <nav class="nav">
+                    <ul>
+                        
+                        
+                        
+                        <li class="nav-item ">
+                            <a href="http://localhost:4000/index.html">
+                                Front Page
+                            </a>
+                            
+                        </li>
+                        
+                        
+                        
+                        <li class="nav-item ">
+                            <a href="http://localhost:4000/categories.html">
+                                Categories
+                            </a>
+                            
+                        </li>
+                        
+                        
+                        
+                        <li class="nav-item ">
+                            <a href="http://localhost:4000/archives.html">
+                                Archives
+                            </a>
+                            
+                        </li>
+                        
+                        
+                        
+                        <li class="nav-item ">
+                            <a href="http://localhost:4000/about.html">
+                                About
+                            </a>
+                            
+                        </li>
+                        
+                        
+                        
+                        <li class="nav-item ">
+                            <a href="http://localhost:4000/links.html">
+                                Links
+                            </a>
+                            
+                        </li>
+                        
+                    </ul>
+                </nav>
+                <div class="follow">
+                    
+                    <a href="/atom.xml" target="_blank"><i class="icon-rss"></i></a>
+                    
+                    <a href="http://weibo.com/" target="_blank"><i class="icon-weibo"></i></a>
+                    
+                    <a href="http://facebook.com/" target="_blank"><i class="icon-facebook"></i></a>
+                    
+                    <a href="https://github.com/zJiaJun/" target="_blank"><i class="icon-github-alt"></i></a>
+                    
+                    <a href="https://twitter.com/zhujiajun_me" target="_blank"><i class="icon-twitter"></i></a>
+                    
+                    <a href="https://plus.google.com/116595571760191938657/about" target="_blank"><i class="icon-google-plus"></i></a>
+                    
+                </div>
+            </div>
+        </div>
+        <div class="contain fn-clear">
+            <div class="container fn-clear">
+                <div class="main">
+                    <div class="article article-post">
+    <h2 class="title">Hadoop Installation on Mac OSX</h2>
+    <div class="info">
+        <span class="info-title"><i class="icon-calendar"></i> Published: </span>
+        <span class="info-date">12 Mar 2017</span>
+        <span class="info-title"><i class="icon-folder-open"></i> Category: </span>
+        <span class="info-link"><a href="http://localhost:4000/categories.html#Hadoop-ref" >Hadoop</a></span>
+    </div>
+    <p>Well as a beginner of UNIX programming, I decided to build this web site just for me to review the code and installation that I have been learning.</p>
+
+<p>In this process, I decided to use Hadoop as my study material given that it will be the future trend to Linux and Java programming. If I can somehow master this technology, not only I will not fall behind the trend, I will also pick up some great things to do in my spare time. So let me begin this (hopefully interesting) journey.</p>
+
+<p>First of all, Hadoop runs on UNIX/Linux or similar OS - I think. Therefore as a newbie to any UNIX/Linux programming, it is a pain for me to get used to its command system. I have been using cygwin for a short time in my work but I tend to avoid it whenever I can - a bad behavior inherited from Windows-spoiled developers. So I started to ask: how can I install a Linux virtual machine? This was quickly answered by some articles online: Mac OSX is built based on UNIX. This actually answers why in bay area so many people prefer to use Mac as their computers in Starbucks. So Mac OSX actually has its own terminal, similar to cygwin command prompt: all I need to do is to open Siri and say “open terminal”, as I don’t actually know where it is located in my computer :)</p>
+
+<p>After all this being said, I googled and followed this article to install my first Hadoop application:
+<a href="https://amodernstory.com/2014/09/23/installing-hadoop-on-mac-osx-yosemite/" target="_blank">https://amodernstory.com/2014/09/23/installing-hadoop-on-mac-osx-yosemite/</a></p>
+
+<p>To some extent, this article may help people that are familiar with Hadoop or at least it’s their second time configuring the system. To a complete idot like me, it brought this problem:</p>
+
+<ul>
+  <li>First of all, when installing HomeBrew, I was prompted to install Java JDK (of course!), which leads to a future problem that led me to uninstall everything: the Java version installed by default (1.8) is actually not supported as documented <a href="https://wiki.apache.org/hadoop/HadoopJavaVersions" target="_blank">here</a>. So that is why everytime I tried to run a Hadoop start, it barked for “Could not create the Java Virtual Machine”. Lesson learned: install JDK 1.7 instead of 1.8.</li>
+</ul>
+
+<p>So I followed the offical guide: Hadoop the Definitive Guide by Tom White. Here are the steps:</p>
+<ul>
+  <li>Do not use root user (if you don’t know what a root user is, it is by default disabled by Mac, so if you are new to Mac, you probably don’t have to worry about it).</li>
+  <li>Install JDK 1.7. I am using MacOS Sierra 10.12.3, so the compatible JDK version I found is <a href="http://www.oracle.com/technetwork/java/javase/downloads/java-archive-downloads-javase7-521261.html#jdk-7u80-oth-JPR" target="_blank">here</a>. I directly used the dmg file.</li>
+  <li>The installed JDK is located in /Library/Java/JavaVirtualMachines/jdk1.7.0_80.jdk/Contents/Home</li>
+  <li>Then I chose Hadoop 2.7.3 in <a href="http://hadoop.apache.org/docs/r2.7.3/hadoop-project-dist/hadoop-common/SingleCluster.html#Download" target="_blank">here</a>.</li>
+  <li>To install Hadoop, simply move the downloaded gzipped tar file to your desired location, and then run:</li>
+</ul>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code>tar xzf hadoop-x.y.z.tar.gz
+</code></pre>
+</div>
+
+<ul>
+  <li>After Hadoop has been successfully unzipped, I did two extra things: created environment variable on JAVA_HOME and created Hadoop command shortcuts. This is all done via the creation of bash_profile file. (A bash_profile file, according to my understanding, is like the environment variable in Windows, there you store locations of commonly used directories so whenever you enter a command, it will go through these directories to find it.)</li>
+  <li>By default, I didn’t find the bash_profile file anywhere, so after intensive researching, I used the following command to create it:</li>
+</ul>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code>vim ~/.bash_profile
+</code></pre>
+</div>
+
+<p>For people like me who have headaches with vim, here are some common usage of it:</p>
+<ul>
+  <li>In a newly opened vim window, press “a” to begin edit.</li>
+  <li>Press “Esc” to quit editing mode.</li>
+  <li>In non-editing mode, hold “Shift” and press “Z” and “Z” to save your change and exit.</li>
+  <li>In non-editing mode, hold “Shift” and press “Z” and “Q” to quit without saving.</li>
+  <li>After creation of bash_profile file, here is what I put in there:</li>
+</ul>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code><span class="nb">export </span><span class="nv">JAVA_HOME</span><span class="o">=</span>/Library/Java/JavaVirtualMachines/jdk1.7.0_80.jdk/Contents/Home
+<span class="nb">export </span><span class="nv">HADOOP_HOME</span><span class="o">=</span>YOUR_EXTRACTED_HADOOP_FOLDER
+<span class="c"># Mine is /Users/jiadreamran/Desktop/hadoop/hadoop-2.7.3</span>
+<span class="nb">export </span><span class="nv">PATH</span><span class="o">=</span><span class="nv">$PATH</span>:<span class="nv">$HADOOP_HOME</span>/bin:<span class="nv">$HADOOP_HOME</span>/sbin
+
+<span class="nb">alias </span><span class="nv">hstart</span><span class="o">=</span><span class="s2">"YOUR_EXTRACTED_HADOOP_FOLDER/sbin/start-dfs.sh;YOUR_EXTRACTED_HADOOP_FOLDER/hadoop-2.7.3/sbin/start-yarn.sh"</span>
+
+<span class="nb">alias </span><span class="nv">hstop</span><span class="o">=</span><span class="s2">"YOUR_EXTRACTED_HADOOP_FOLDER/sbin/stop-yarn.sh;YOUR_EXTRACTED_HADOOP_FOLDER/sbin/stop-dfs.sh"</span>
+</code></pre>
+</div>
+
+<p>So Hadoop commands will be registered to your terminal (you need to restart the terminal for it to take effort). If everything goes well, when you run the following command:</p>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code>hadoop version
+</code></pre>
+</div>
+
+<p>You should be able to see some output like:</p>
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code>Hadoop 2.7.3
+Subversion https://git-wip-us.apache.org/repos/asf/hadoop.git -r baa91f7c6bc9cb92be5982de4719c1c8af91ccff
+Compiled by root on 2016-08-18T01:41Z
+Compiled with protoc 2.5.0
+From <span class="nb">source </span>with checksum 2e4ce5f957ea4db193bce3734ff29ff4
+This <span class="nb">command </span>was run using YOUR_EXTRACTED_HADOOP_FOLDER/share/hadoop/common/hadoop-common-2.7.3.jar
+</code></pre>
+</div>
+
+<p>I stopped at Hadoop installation and haven’t done any configurations (to core-site.xml, hdfs-site.xml, yarn-site.xml etc).</p>
+
+<p>The configuration part will be in my next blog.</p>
+
+<p>That’s by far all I have gotten. Next time I will try to create a single cluster and see what I can run there.</p>
+
+<p>Cheers.</p>
+
+    <div class="bdsharebuttonbox">
+        <a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信"></a>
+        <a href="#" class="bds_douban" data-cmd="douban" title="分享到豆瓣网"></a>
+        <a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+        <a href="#" class="bds_tqq" data-cmd="tqq" title="分享到腾讯微博"></a>
+        <a href="#" class="bds_renren" data-cmd="renren" title="分享到人人网"></a>
+        <a href="#" class="bds_mail" data-cmd="mail" title="分享到邮件分享"></a>
+        <a href="#" class="bds_more" data-cmd="more"></a>
+    </div>
+    <nav class="article-previous fn-clear">
+        
+        
+        <a class="next" href="/hadoop/2017/03/12/hadoop-first-config-pseudodistributed.html" rel="bookmark">Hadoop Configuaration Pseudodistributed Mode&nbsp;&raquo;</a>
+        
+    </nav>
+    <div class="comment">
+        
+        
+    </div>
+</div>
+
+                </div>
+                <div class="aside">
+                    <div class="aside-contact">
+                        <h4 class="title">About me</h4>
+                        <div class="det fn-clear">
+                            <div class="det-image">
+                                <img src="/images/header.jpg" />
+                            </div>
+                            <div class="det-text">
+                                <p>Windows programmer trying to get adapted to the world</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="aside-item">
+                        <h4 class="title">Recent Posts</h4>
+                        <ul class="list">
+                            
+                                <li><a href="http://localhost:4000/hadoop/2017/09/24/spark-installation-from-scratch.html" title="Spark Installation and Configuration from Scratch" rel="bookmark">Spark Installation and Configuration from Scratch</a></li>
+                            
+                                <li><a href="http://localhost:4000/hadoop/2017/06/04/apache-flume-hadoop.html" title="Apache Flume" rel="bookmark">Apache Flume</a></li>
+                            
+                                <li><a href="http://localhost:4000/hadoop/2017/05/18/a-high-level-experiment-with-hadoop-cloudera.html" title="A High Level Experiment with Hadoop (Cloudera)" rel="bookmark">A High Level Experiment with Hadoop (Cloudera)</a></li>
+                            
+                                <li><a href="http://localhost:4000/hadoop/2017/05/01/hadoop-project-setup.html" title="Hadoop Project Setup" rel="bookmark">Hadoop Project Setup</a></li>
+                            
+                                <li><a href="http://localhost:4000/hadoop/2017/03/14/file-copy-in-hadoop.html" title="File Copy in HDFS" rel="bookmark">File Copy in HDFS</a></li>
+                            
+                                <li><a href="http://localhost:4000/hadoop/2017/03/12/hadoop-first-config-pseudodistributed.html" title="Hadoop Configuaration Pseudodistributed Mode" rel="bookmark">Hadoop Configuaration Pseudodistributed Mode</a></li>
+                            
+                        </ul>
+                    </div>
+
+                    <div class="aside-item">
+                        <h4 class="title">Links</h4>
+                        <ul class="list">
+                            
+                                
+                                    
+                                    <li><a href="http://jekyllrb.com" title="Jekyll" target="_blank">Jekyll</a></li>
+                                    
+                                    <li><a href="http://www.zhanxin.info/themes.html" title="Jekyll Theme" target="_blank">Jekyll Theme</a></li>
+                                    
+                                
+                            
+                                
+                            
+                        </ul>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="foot">
+            <div class="footer">
+                <p>Copyright 2013. All rights reserved. Powered by <a href="http://jekyllrb.com" target="_blank">Jekyll</a>, Design by <a href="http://www.zhanxin.info" target="_blank">zhanxin.info</a>.</p>
+            </div>
+        </div>
+        <script type="text/javascript" src="http://cdn.bootcss.com/jquery/1.8.3/jquery.min.js"></script>
+        <script type="text/javascript">
+            console.log(' %c9leg.com', 'background-image:-webkit-gradient( linear, left top, right top, color-stop(0, #f22), color-stop(0.15, #f2f), color-stop(0.3, #22f), color-stop(0.45, #2ff), color-stop(0.6, #2f2),color-stop(0.75, #2f2), color-stop(0.9, #ff2), color-stop(1, #f22) );color:transparent;-webkit-background-clip: text;font-size:5em;');
+        </script>
+        
+        
+    </body>
+</html>

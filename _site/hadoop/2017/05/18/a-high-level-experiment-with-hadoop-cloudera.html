@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>A High Level Experiment with Hadoop (Cloudera) - 9leg</title>
+        <!-- meta -->
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+        <meta name="generator" content="Jekyll" />
+        <meta name="author" content="jiadreamran" />
+        <meta name="description" content="java,scala" />
+        <meta name="keywords" content="" />
+        <meta name="robots" content="index,nofollow" />
+        <!-- atom -->
+        <link rel="alternate" type="application/atom+xml" title="Recent Entries" href="http://localhost:4000/atom.xml" />
+        <link rel="shortcut icon" href="/images/shortcut.jpg" type="image/x-icon" />
+        <!-- font-awesome -->
+        <link href="http://cdn.bootcss.com/font-awesome/3.2.1/css/font-awesome.min.css" rel="stylesheet">
+        <!--<link href='http://fonts.useso.com/css?family=Spirax' rel='stylesheet' type='text/css'>-->
+        <link rel="stylesheet" href="http://localhost:4000/css/syntax.css">
+        <link rel="stylesheet" href="http://localhost:4000/css/main.css">
+        
+        
+
+    </head>
+    <body>
+        <div class="head fn-clear">
+            <div class="header">
+                <h1 class="logo">
+                    <a href="http://localhost:4000"><i class="icon-anchor"></i></a>
+                </h1>
+                <nav class="nav">
+                    <ul>
+                        
+                        
+                        
+                        <li class="nav-item ">
+                            <a href="http://localhost:4000/index.html">
+                                Front Page
+                            </a>
+                            
+                        </li>
+                        
+                        
+                        
+                        <li class="nav-item ">
+                            <a href="http://localhost:4000/categories.html">
+                                Categories
+                            </a>
+                            
+                        </li>
+                        
+                        
+                        
+                        <li class="nav-item ">
+                            <a href="http://localhost:4000/archives.html">
+                                Archives
+                            </a>
+                            
+                        </li>
+                        
+                        
+                        
+                        <li class="nav-item ">
+                            <a href="http://localhost:4000/about.html">
+                                About
+                            </a>
+                            
+                        </li>
+                        
+                        
+                        
+                        <li class="nav-item ">
+                            <a href="http://localhost:4000/links.html">
+                                Links
+                            </a>
+                            
+                        </li>
+                        
+                    </ul>
+                </nav>
+                <div class="follow">
+                    
+                    <a href="/atom.xml" target="_blank"><i class="icon-rss"></i></a>
+                    
+                    <a href="http://weibo.com/" target="_blank"><i class="icon-weibo"></i></a>
+                    
+                    <a href="http://facebook.com/" target="_blank"><i class="icon-facebook"></i></a>
+                    
+                    <a href="https://github.com/zJiaJun/" target="_blank"><i class="icon-github-alt"></i></a>
+                    
+                    <a href="https://twitter.com/zhujiajun_me" target="_blank"><i class="icon-twitter"></i></a>
+                    
+                    <a href="https://plus.google.com/116595571760191938657/about" target="_blank"><i class="icon-google-plus"></i></a>
+                    
+                </div>
+            </div>
+        </div>
+        <div class="contain fn-clear">
+            <div class="container fn-clear">
+                <div class="main">
+                    <div class="article article-post">
+    <h2 class="title">A High Level Experiment with Hadoop (Cloudera)</h2>
+    <div class="info">
+        <span class="info-title"><i class="icon-calendar"></i> Published: </span>
+        <span class="info-date">18 May 2017</span>
+        <span class="info-title"><i class="icon-folder-open"></i> Category: </span>
+        <span class="info-link"><a href="http://localhost:4000/categories.html#Hadoop-ref" >Hadoop</a></span>
+    </div>
+    <p>When following the book led me to a place where I didn’t know how to create a hadoop project (the eclipse comment in the last post didn’t seem to create me anything in my project folder), I decided to give a pre-configured machine a try. Maybe experiencing with a high level tour can help me better understand the hadoop usage, then I can switch back to basic configurations.</p>
+
+<p>I had the following items installed/downloaded:</p>
+
+<ul>
+  <li>VMWare Fusion</li>
+  <li>Virtual machine from <a href="https://downloads.cloudera.com/demo_vm/virtualbox/cloudera-quickstart-vm-5.4.2-0-virtualbox.zip" target="_blank">here</a></li>
+</ul>
+
+<p>So I started the VM (Linux I think) and it already has hadoop as well as other components configured for me, including:</p>
+
+<ul>
+  <li>Hadoop 2.6.0 (cdh5.4.2)</li>
+  <li>Java 1.7.0_67 64 bit</li>
+  <li>Sqoop (SQL to Hadoop tool, transfer data from RDBMS to hadoop data type)</li>
+  <li>Impala (Cloudera’s hadoop-like table management/querying tool)</li>
+  <li>Apache Spark</li>
+  <li>MySQL</li>
+</ul>
+
+<p>First, I tried to export 6 tables from MySQL into HDFS by running the following commands in terminal. We have 6 tables to export:</p>
+
+<ul>
+  <li>categories</li>
+  <li>customers</li>
+  <li>departments</li>
+  <li>order_items (including product ID, quantity and total price)</li>
+  <li>orders (including multiple order_items)</li>
+  <li>products (product ID and product name)</li>
+</ul>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code>sqoop import-all-tables <span class="se">\</span>
+-m 1 <span class="se">\</span>
+--connect jdbc:mysql://quickstart:3306/retail_db <span class="se">\</span>
+--username<span class="o">=</span>retail_dba <span class="se">\</span>
+--password<span class="o">=</span>cloudera <span class="se">\</span>
+--compression-codec<span class="o">=</span>snappy <span class="se">\</span>
+--as-avrodatafile <span class="se">\</span>
+--warehouse-dir<span class="o">=</span>/user/hive/warehouse
+</code></pre>
+</div>
+
+<p>What the above command does:</p>
+<ol>
+  <li>Connect to MySQL database using Sqoop (located in //quickstart:3306/retail_db)</li>
+  <li>Export all the tables within the DB into hadoop avro format. This will also create all the schema files (*.avsc), which I will cover later.</li>
+  <li>Specify the output directory to /user/hive/warehouse of HDFS.</li>
+</ol>
+
+<p>Then I can verify the exported file in HDFS by running things like:</p>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code>hadoop fs -ls /user/hive/warehouse/
+hadoop fs -ls /user/hive/warehouse/categories/
+</code></pre>
+</div>
+
+<p>You can also verify the avro schema files (one for each exported table) by:</p>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code>ls -l <span class="k">*</span>.avsc
+</code></pre>
+</div>
+
+<p>Now we need to move the created avro schema files into HDFS so we can further utilize Impala to create tables out of the exported hadoop files:</p>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code>sudo -u hdfs fs -mkdir /user/examples
+sudo -u hdfs fs -chmod +rw /user/examples
+hadoop fs -copyFromLocal ~/<span class="k">*</span>.avsc /user/examples
+</code></pre>
+</div>
+
+<p>This will create a folder “/user/examples” in HDFS and then copy the avro schema files in there. Note that these schema files can also be read by Hive, which will enable querying jobs by creating MapReduce processes.</p>
+
+<p>Next, we will use Impala to import the 6 exported tables. Later on we will also experience Hive, which, when compared to Impala, is slower but more flexible. Impala reads directly from HDFS.</p>
+
+<p>We will be using Hue to execute Impala queries. Simply go to <a href="http://www.cornercycle.com/about/hybrid-trailer-rentals-pg60.htm" target="_blank">Hue’s page in Cloudera</a>. In “Query Editors” &gt; “Impala”, type in the following commands to make external tables out of HDFS. Note that the avro schema files will be used for Impala to read the data. There is no actual table created in here because Impala will read directly from the files:</p>
+
+<div class="language-sql highlighter-rouge"><pre class="highlight"><code><span class="k">CREATE</span> <span class="k">EXTERNAL</span> <span class="k">TABLE</span> <span class="n">categories</span> <span class="n">STORED</span> <span class="k">AS</span> <span class="n">AVRO</span>
+<span class="k">LOCATION</span> <span class="s1">'hdfs:///user/hive/warehouse/categories'</span>
+<span class="n">TBLPROPERTIES</span> <span class="p">(</span><span class="s1">'avro.schema.url'</span><span class="o">=</span><span class="s1">'hdfs://quickstart/user/examples/sqoop_import_categories.avsc'</span><span class="p">);</span>
+
+<span class="k">CREATE</span> <span class="k">EXTERNAL</span> <span class="k">TABLE</span> <span class="n">customers</span> <span class="n">STORED</span> <span class="k">AS</span> <span class="n">AVRO</span>
+<span class="k">LOCATION</span> <span class="s1">'hdfs:///user/hive/warehouse/customers'</span>
+<span class="n">TBLPROPERTIES</span> <span class="p">(</span><span class="s1">'avro.schema.url'</span><span class="o">=</span><span class="s1">'hdfs://quickstart/user/examples/sqoop_import_customers.avsc'</span><span class="p">);</span>
+
+<span class="k">CREATE</span> <span class="k">EXTERNAL</span> <span class="k">TABLE</span> <span class="n">departments</span> <span class="n">STORED</span> <span class="k">AS</span> <span class="n">AVRO</span>
+<span class="k">LOCATION</span> <span class="s1">'hdfs:///user/hive/warehouse/departments'</span>
+<span class="n">TBLPROPERTIES</span> <span class="p">(</span><span class="s1">'avro.schema.url'</span><span class="o">=</span><span class="s1">'hdfs://quickstart/user/examples/sqoop_import_departments.avsc'</span><span class="p">);</span>
+
+<span class="k">CREATE</span> <span class="k">EXTERNAL</span> <span class="k">TABLE</span> <span class="n">orders</span> <span class="n">STORED</span> <span class="k">AS</span> <span class="n">AVRO</span>
+<span class="k">LOCATION</span> <span class="s1">'hdfs:///user/hive/warehouse/orders'</span>
+<span class="n">TBLPROPERTIES</span> <span class="p">(</span><span class="s1">'avro.schema.url'</span><span class="o">=</span><span class="s1">'hdfs://quickstart/user/examples/sqoop_import_orders.avsc'</span><span class="p">);</span>
+
+<span class="k">CREATE</span> <span class="k">EXTERNAL</span> <span class="k">TABLE</span> <span class="n">order_items</span> <span class="n">STORED</span> <span class="k">AS</span> <span class="n">AVRO</span>
+<span class="k">LOCATION</span> <span class="s1">'hdfs:///user/hive/warehouse/order_items'</span>
+<span class="n">TBLPROPERTIES</span> <span class="p">(</span><span class="s1">'avro.schema.url'</span><span class="o">=</span><span class="s1">'hdfs://quickstart/user/examples/sqoop_import_order_items.avsc'</span><span class="p">);</span>
+
+<span class="k">CREATE</span> <span class="k">EXTERNAL</span> <span class="k">TABLE</span> <span class="n">products</span> <span class="n">STORED</span> <span class="k">AS</span> <span class="n">AVRO</span>
+<span class="k">LOCATION</span> <span class="s1">'hdfs:///user/hive/warehouse/products'</span>
+<span class="n">TBLPROPERTIES</span> <span class="p">(</span><span class="s1">'avro.schema.url'</span><span class="o">=</span><span class="s1">'hdfs://quickstart/user/examples/sqoop_import_products.avsc'</span><span class="p">);</span>
+</code></pre>
+</div>
+
+<p>You can then run SQL against the external table in Impala, for example:</p>
+
+<div class="language-sql highlighter-rouge"><pre class="highlight"><code><span class="c1">-- top 10 revenue generating products</span>
+<span class="k">select</span> <span class="n">p</span><span class="p">.</span><span class="n">product_id</span><span class="p">,</span> <span class="n">p</span><span class="p">.</span><span class="n">product_name</span><span class="p">,</span> <span class="n">r</span><span class="p">.</span><span class="n">revenue</span>
+<span class="k">from</span> <span class="n">products</span> <span class="n">p</span> <span class="k">inner</span> <span class="k">join</span>
+<span class="p">(</span><span class="k">select</span> <span class="n">oi</span><span class="p">.</span><span class="n">order_item_product_id</span><span class="p">,</span> <span class="k">sum</span><span class="p">(</span><span class="k">cast</span><span class="p">(</span><span class="n">oi</span><span class="p">.</span><span class="n">order_item_subtotal</span> <span class="k">as</span> <span class="n">float</span><span class="p">))</span> <span class="k">as</span> <span class="n">revenue</span>
+<span class="k">from</span> <span class="n">order_items</span> <span class="n">oi</span> <span class="k">inner</span> <span class="k">join</span> <span class="n">orders</span> <span class="n">o</span>
+<span class="k">on</span> <span class="n">oi</span><span class="p">.</span><span class="n">order_item_order_id</span> <span class="o">=</span> <span class="n">o</span><span class="p">.</span><span class="n">order_id</span>
+<span class="k">where</span> <span class="n">o</span><span class="p">.</span><span class="n">order_status</span> <span class="o">&lt;&gt;</span> <span class="s1">'CANCELED'</span>
+<span class="k">and</span> <span class="n">o</span><span class="p">.</span><span class="n">order_status</span> <span class="o">&lt;&gt;</span> <span class="s1">'SUSPECTED_FRAUD'</span>
+<span class="k">group</span> <span class="k">by</span> <span class="n">order_item_product_id</span><span class="p">)</span> <span class="n">r</span>
+<span class="k">on</span> <span class="n">p</span><span class="p">.</span><span class="n">product_id</span> <span class="o">=</span> <span class="n">r</span><span class="p">.</span><span class="n">order_item_product_id</span>
+<span class="k">order</span> <span class="k">by</span> <span class="n">r</span><span class="p">.</span><span class="n">revenue</span> <span class="k">desc</span>
+<span class="k">limit</span> <span class="mi">10</span><span class="p">;</span>
+</code></pre>
+</div>
+
+<p>In the next article I will introduce a powerful “stream to HDFS” tool, Flume.</p>
+
+    <div class="bdsharebuttonbox">
+        <a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信"></a>
+        <a href="#" class="bds_douban" data-cmd="douban" title="分享到豆瓣网"></a>
+        <a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+        <a href="#" class="bds_tqq" data-cmd="tqq" title="分享到腾讯微博"></a>
+        <a href="#" class="bds_renren" data-cmd="renren" title="分享到人人网"></a>
+        <a href="#" class="bds_mail" data-cmd="mail" title="分享到邮件分享"></a>
+        <a href="#" class="bds_more" data-cmd="more"></a>
+    </div>
+    <nav class="article-previous fn-clear">
+        
+        <a class="prev" href="/hadoop/2017/05/01/hadoop-project-setup.html" rel="bookmark">&laquo;&nbsp;Hadoop Project Setup</a>
+        
+        
+        <a class="next" href="/hadoop/2017/06/04/apache-flume-hadoop.html" rel="bookmark">Apache Flume&nbsp;&raquo;</a>
+        
+    </nav>
+    <div class="comment">
+        
+        
+    </div>
+</div>
+
+                </div>
+                <div class="aside">
+                    <div class="aside-contact">
+                        <h4 class="title">About me</h4>
+                        <div class="det fn-clear">
+                            <div class="det-image">
+                                <img src="/images/header.jpg" />
+                            </div>
+                            <div class="det-text">
+                                <p>Windows programmer trying to get adapted to the world</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="aside-item">
+                        <h4 class="title">Recent Posts</h4>
+                        <ul class="list">
+                            
+                                <li><a href="http://localhost:4000/hadoop/2017/09/24/spark-installation-from-scratch.html" title="Spark Installation and Configuration from Scratch" rel="bookmark">Spark Installation and Configuration from Scratch</a></li>
+                            
+                                <li><a href="http://localhost:4000/hadoop/2017/06/04/apache-flume-hadoop.html" title="Apache Flume" rel="bookmark">Apache Flume</a></li>
+                            
+                                <li><a href="http://localhost:4000/hadoop/2017/05/18/a-high-level-experiment-with-hadoop-cloudera.html" title="A High Level Experiment with Hadoop (Cloudera)" rel="bookmark">A High Level Experiment with Hadoop (Cloudera)</a></li>
+                            
+                                <li><a href="http://localhost:4000/hadoop/2017/05/01/hadoop-project-setup.html" title="Hadoop Project Setup" rel="bookmark">Hadoop Project Setup</a></li>
+                            
+                                <li><a href="http://localhost:4000/hadoop/2017/03/14/file-copy-in-hadoop.html" title="File Copy in HDFS" rel="bookmark">File Copy in HDFS</a></li>
+                            
+                                <li><a href="http://localhost:4000/hadoop/2017/03/12/hadoop-first-config-pseudodistributed.html" title="Hadoop Configuaration Pseudodistributed Mode" rel="bookmark">Hadoop Configuaration Pseudodistributed Mode</a></li>
+                            
+                        </ul>
+                    </div>
+
+                    <div class="aside-item">
+                        <h4 class="title">Links</h4>
+                        <ul class="list">
+                            
+                                
+                                    
+                                    <li><a href="http://jekyllrb.com" title="Jekyll" target="_blank">Jekyll</a></li>
+                                    
+                                    <li><a href="http://www.zhanxin.info/themes.html" title="Jekyll Theme" target="_blank">Jekyll Theme</a></li>
+                                    
+                                
+                            
+                                
+                            
+                        </ul>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="foot">
+            <div class="footer">
+                <p>Copyright 2013. All rights reserved. Powered by <a href="http://jekyllrb.com" target="_blank">Jekyll</a>, Design by <a href="http://www.zhanxin.info" target="_blank">zhanxin.info</a>.</p>
+            </div>
+        </div>
+        <script type="text/javascript" src="http://cdn.bootcss.com/jquery/1.8.3/jquery.min.js"></script>
+        <script type="text/javascript">
+            console.log(' %c9leg.com', 'background-image:-webkit-gradient( linear, left top, right top, color-stop(0, #f22), color-stop(0.15, #f2f), color-stop(0.3, #22f), color-stop(0.45, #2ff), color-stop(0.6, #2f2),color-stop(0.75, #2f2), color-stop(0.9, #ff2), color-stop(1, #f22) );color:transparent;-webkit-background-clip: text;font-size:5em;');
+        </script>
+        
+        
+    </body>
+</html>

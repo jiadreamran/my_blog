@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Spark Installation and Configuration from Scratch - 9leg</title>
+        <!-- meta -->
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+        <meta name="generator" content="Jekyll" />
+        <meta name="author" content="jiadreamran" />
+        <meta name="description" content="java,scala" />
+        <meta name="keywords" content="" />
+        <meta name="robots" content="index,nofollow" />
+        <!-- atom -->
+        <link rel="alternate" type="application/atom+xml" title="Recent Entries" href="http://localhost:4000/atom.xml" />
+        <link rel="shortcut icon" href="/images/shortcut.jpg" type="image/x-icon" />
+        <!-- font-awesome -->
+        <link href="http://cdn.bootcss.com/font-awesome/3.2.1/css/font-awesome.min.css" rel="stylesheet">
+        <!--<link href='http://fonts.useso.com/css?family=Spirax' rel='stylesheet' type='text/css'>-->
+        <link rel="stylesheet" href="http://localhost:4000/css/syntax.css">
+        <link rel="stylesheet" href="http://localhost:4000/css/main.css">
+        
+        
+
+    </head>
+    <body>
+        <div class="head fn-clear">
+            <div class="header">
+                <h1 class="logo">
+                    <a href="http://localhost:4000"><i class="icon-anchor"></i></a>
+                </h1>
+                <nav class="nav">
+                    <ul>
+                        
+                        
+                        
+                        <li class="nav-item ">
+                            <a href="http://localhost:4000/index.html">
+                                Front Page
+                            </a>
+                            
+                        </li>
+                        
+                        
+                        
+                        <li class="nav-item ">
+                            <a href="http://localhost:4000/categories.html">
+                                Categories
+                            </a>
+                            
+                        </li>
+                        
+                        
+                        
+                        <li class="nav-item ">
+                            <a href="http://localhost:4000/archives.html">
+                                Archives
+                            </a>
+                            
+                        </li>
+                        
+                        
+                        
+                        <li class="nav-item ">
+                            <a href="http://localhost:4000/about.html">
+                                About
+                            </a>
+                            
+                        </li>
+                        
+                        
+                        
+                        <li class="nav-item ">
+                            <a href="http://localhost:4000/links.html">
+                                Links
+                            </a>
+                            
+                        </li>
+                        
+                    </ul>
+                </nav>
+                <div class="follow">
+                    
+                    <a href="/atom.xml" target="_blank"><i class="icon-rss"></i></a>
+                    
+                    <a href="http://weibo.com/" target="_blank"><i class="icon-weibo"></i></a>
+                    
+                    <a href="http://facebook.com/" target="_blank"><i class="icon-facebook"></i></a>
+                    
+                    <a href="https://github.com/zJiaJun/" target="_blank"><i class="icon-github-alt"></i></a>
+                    
+                    <a href="https://twitter.com/zhujiajun_me" target="_blank"><i class="icon-twitter"></i></a>
+                    
+                    <a href="https://plus.google.com/116595571760191938657/about" target="_blank"><i class="icon-google-plus"></i></a>
+                    
+                </div>
+            </div>
+        </div>
+        <div class="contain fn-clear">
+            <div class="container fn-clear">
+                <div class="main">
+                    <div class="article article-post">
+    <h2 class="title">Spark Installation and Configuration from Scratch</h2>
+    <div class="info">
+        <span class="info-title"><i class="icon-calendar"></i> Published: </span>
+        <span class="info-date">24 Sep 2017</span>
+        <span class="info-title"><i class="icon-folder-open"></i> Category: </span>
+        <span class="info-link"><a href="http://localhost:4000/categories.html#Hadoop-ref" >Hadoop</a></span>
+    </div>
+    <p>It has been a while since last time I updated something. During this time I have learned more about hadoop and spark, which leads to me the decision to focus on spark.</p>
+
+<p>This is an article to guide you through spark installation/configuration via virtual machines. Again, I am not a typicall Linux/Mac user so everything is also new to me.</p>
+
+<p>What I have before installation:</p>
+
+<ul>
+  <li>MacOs Sierra 10.12</li>
+  <li>VMWare Fusion 8.5 (purchased a license)</li>
+</ul>
+
+<p>To install Spark, there are a lot of things to configure:</p>
+
+<ul>
+  <li>Linux virtual machines (Redhat)</li>
+  <li>Java installation</li>
+  <li>Hadoop installation</li>
+  <li>Spark installation</li>
+</ul>
+
+<p>Let’s install and configure them one at a time.</p>
+
+<h2 id="linux-virtual-machine-redhat">Linux Virtual Machine (Redhat)</h2>
+<p>I have VMWare Fusion installed on my Mac so the only thing I need is to have a virtual machine image to mount (I tried to build a customized virtual machine but failed). So I downloaded the Redhat Enterprise Linux 5.4.0 version (DVD iso) downloaded from <a href="https://access.redhat.com/downloads/content/69/ver=/rhel---5/5.4/x86_64/product-software/" target="_blank">here</a>.</p>
+
+<h3 id="create-virtual-machines">Create Virtual Machines</h3>
+
+<ol>
+  <li>Open VMWare, go to virtual machine library.</li>
+  <li>File &gt; New, then double click on “Install from disc or image”.</li>
+  <li>Browse to the iso file you just downloaded, then drag it onto the popup panel.</li>
+  <li>Choose installation language and so on. Choose “Skip” in CD page.
+ 4.1 Software Selection: Server with GUI: select FTP Server, KDE, Development Tools.</li>
+  <li>Configure your partition, make sure you choose “I will configure partitioning”. By default your VM will have 20 GB of disk space. To create a new mount point, click “+” button on the bottom left corner.
+ 5.1 Create a root mount point by selecting “" as the mount point and assign it 15 GB. File system will be “xfs”.
+ 5.2 Create a boot mount point by selecting “\boot” as the mount point and assign it 300 MB (xfs).
+ 5.3 Create a swap mount point by selecting “swap” as the mount point and assign it 2048 MB (twice of the machine’s physical memory). The file system type will be defaulted to “swap”.</li>
+  <li>After clicking “Done” button, “Begin Installation” should be enabled. Click it to start installation.</li>
+  <li>During installation, you can set a password for root user.</li>
+  <li>After installation, shut down the vm.</li>
+</ol>
+
+<p>Follow the above instruction, I created a virtual machine, “Master”. Both virtual machine bundle name and the name within VMWare are “Master”.</p>
+
+<p>Then we will copy this “Master” machine and named it “Slave01”. To copy a vm in VMWare Fusion, follow <a href="https://developers.redhat.com/products/rhel/download/" target="_blank">this tutorial</a>. When opening up this newly copied vm (by simply double click on its bundle file), you have to choose “I Copied It” from the popup window.</p>
+
+<h3 id="configure-vmware-fusion-ip">Configure VMWare Fusion IP</h3>
+
+<p>This is a relatively easy but important task. You need to configure the IP address for VMWare so it can be used in conjunction with the virtual machines’ configured IP address.</p>
+
+<p>In this tutorial, we will dim the overall IP address as “192.168.3.6”.</p>
+
+<p>The Master vm will have an IP address of “192.168.3.100”.</p>
+
+<p>The Slave01 vm will have an IP address of “192.168.3.101”.</p>
+
+<p>Turn off all vm and VMWare Fusion.</p>
+
+<p>To change the IP address for VMWare, use the following command:</p>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code>sudo vim /Library/Preferences/VMWare Fusion/networking
+</code></pre>
+</div>
+
+<p>In vim, change the value of VNET_8_HOSTONLY_SUBNET to “192.168.3.6”.</p>
+
+<p>Restart VMWare Fusion.</p>
+
+<p><a href="http://blog.csdn.net/seven_zhao/article/details/43406289" target="_blank">This blog (in Chinese)</a> can be used for reference regarding these settings.</p>
+
+<h3 id="configure-machine-ip-and-network">Configure Machine IP and Network</h3>
+
+<ol>
+  <li>Start both machines you created above.</li>
+  <li>To login, just use “root” username.</li>
+  <li>In “Master” vm, go to System &gt; Administration &gt; Network.</li>
+  <li>Double-click on the only (if more than one entry, delete one) item under “Devices” tab.</li>
+  <li>Check “Statically set IP addresses”.</li>
+  <li>Change the “Address” value to “192.168.3.100”. Change the “Subnet mask” value to “255.255.255.0”.</li>
+  <li>Click OK (bottom right).</li>
+  <li>Click “Activate”.</li>
+</ol>
+
+<p>Repeat step 3 to 8 for “Slave01” vm, this time set Address to “192.168.3.101”.</p>
+
+<p>When all the steps are done correctly, you should be able to ping your two vms using the IP address you configured.</p>
+
+<h3 id="configure-machine-names">Configure Machine Names</h3>
+
+<ol>
+  <li>
+    <p>SSH into both vms. I used <a href="https://github.com/fitztrev/shuttle" target="_blank">Shuttle</a> since I cannot find xshell on Mac.
+ 1.1 To SSH into a vm, simply open Shuttle (or terminal), then type in “ssh username@host”.
+ 1.2 For example, to login to master using “root” user:</p>
+
+    <div class="language-bash highlighter-rouge"><pre class="highlight"><code> ssh root@192.168.3.100
+</code></pre>
+    </div>
+  </li>
+  <li>
+    <p>Modify hostname:
+ 2.1 After ssh into the machine, open network config file</p>
+
+    <div class="language-bash highlighter-rouge"><pre class="highlight"><code> vim /etc/sysconfig/network
+</code></pre>
+    </div>
+
+    <p>2.2 Modify “HOSTNAME” attribute, set it to the correct name.
+ 2.3 I set Master machine (192.168.3.100) as “master”. Slave machine (192.168.3.101) as “slave01”.</p>
+  </li>
+  <li>
+    <p>Disable firewall. This is disabled during vm installation, but you can always disable it by:</p>
+
+    <div class="language-bash highlighter-rouge"><pre class="highlight"><code> vim /etc/sysconfig/selinux
+</code></pre>
+    </div>
+  </li>
+  <li>
+    <p>Config host name so master and slave01 can communicate with each other.
+ 4.1 On both vms, modify “hosts” file:</p>
+
+    <div class="language-bash highlighter-rouge"><pre class="highlight"><code> vim /etc/hosts
+</code></pre>
+    </div>
+
+    <p>4.2 Appending the following the the end of the file:</p>
+
+    <div class="language-bash highlighter-rouge"><pre class="highlight"><code> 192.168.3.100 master
+ 192.168.3.101 slave01
+</code></pre>
+    </div>
+  </li>
+  <li>
+    <p>Reboot both vms.</p>
+
+    <div class="language-bash highlighter-rouge"><pre class="highlight"><code> reboot
+</code></pre>
+    </div>
+  </li>
+</ol>
+
+<p>If everything works alright, you should be able to ssh into master and then two changes will happen:</p>
+
+<ol>
+  <li>Instead of “root@192.168.3.100” in the head of the command line, it will have “root@master”.</li>
+  <li>If you ping slave01, you should be able to do that.</li>
+</ol>
+
+<p>Same applies to slave01.</p>
+
+<h2 id="hadoop-cluster-creation">Hadoop Cluster Creation</h2>
+
+<h3 id="install-java">Install Java</h3>
+
+<p>In order to install Java, we need to upload the Java installation package from local computer (my mac) to both virtual machines. To do that, we need to enable ftp server first.</p>
+
+<h4 id="enable-ftp-server">Enable FTP Server</h4>
+
+<p>To enable ftp server, ssh into both master and slave01 machines, and then try:</p>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code>/etc/init.d/vsftpd restart
+</code></pre>
+</div>
+
+<p>The shutting down of the ftp server may fail once, but just try serval times until both shutting down and restart have “OK” status.</p>
+
+<p>We need to create a folder for uploading files from local to vm (both vms):</p>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code>mkdir installer
+</code></pre>
+</div>
+
+<h4 id="upload-installation-file-to-vms">Upload Installation File to VMs</h4>
+
+<p>To upload any file from local machine to the configured VMs, I used <a href="https://filezilla-project.org/download.php?platform=osx" target="_blank">FileZilla for OS X</a>.</p>
+
+<p>You need to config the connections to the two vms via Site Manager, the port number is 22 and the connection type is recommended as SFTP:</p>
+
+<p><img src="assets/FileZilla_Conig.jpg" alt="FTP Connection Config" /></p>
+
+<p>Once config is done, connect to both vms within FileZilla.</p>
+
+<p>In my previous article on hadoop installation, I choose <a href="http://www.oracle.com/technetwork/java/javase/downloads/java-archive-downloads-javase7-521261.html#jdk-7u80-oth-JPR" target="_blank">JDK 1.7</a> as the Java version. This time I will choose the same thing, however using Linux 64-bit version.</p>
+
+<p>Now need to upload the JDK to the two vms via FileZilla. Just use the FileZilla GUI to do it (you need to upload the file under the newly created “/root/installer/” folder).</p>
+
+<h4 id="install-jdk">Install JDK</h4>
+
+<p>After finished uploading, cd into /root/installer, then:</p>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code>rpm -ivh jdk-7u80-linux-x64.rpm
+</code></pre>
+</div>
+
+<p>You should be able to verify your JDK version:</p>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code>javac -version
+</code></pre>
+</div>
+
+<h3 id="create-hadoop-users">Create Hadoop Users</h3>
+
+<p>Create two new tabs in terminal, ssh into master and slave01 respectively. Create a username “hadoop”, and then switch to</p>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code>useradd hadoop
+passwd hadoop
+<span class="c"># Input your password here and retype it according to prompt</span>
+su - hadoop
+</code></pre>
+</div>
+
+<p>Create “installer” directory for user “hadoop”</p>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code>mkdir installer
+</code></pre>
+</div>
+
+<h3 id="config-ssh-equivalent">Config SSH Equivalent</h3>
+
+<p>Config ssh equivalent for both vms. The purpose of setting ssh equivalent for these two machines is to let you ssh into the two vms without having to type the password.</p>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code>ssh-keygen -t rsa
+<span class="c"># Press "Enter" for 3 times.</span>
+</code></pre>
+</div>
+
+<p>Config id_rsa.pub for “master”:</p>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code><span class="nb">cd</span> .ssh/
+authorized_keys
+<span class="c"># You will see authorized_keys file generated in this directory if you want to</span>
+ls
+scp authorized_keys slave01:~/.ssh/
+<span class="c"># Enter your password for hadoop user on "slave01"</span>
+</code></pre>
+</div>
+
+<p>The “authorized_keys” file will be added to slave01 under hadoop/.ssh/ folder.</p>
+
+<p>Go to “slave01” ssh terminal, write the copied id_rsa.pub file into authoized_keys file. Then send it back to “master”, so the “authorized_keys” file will also have the “slave01” config content.</p>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code>cat id_rsa.pub &gt;&gt; authorized_keys
+<span class="c"># View the modified authorized_keys file if you want to</span>
+cat authorized_keys
+scp authorized_keys master:~/.ssh/
+<span class="c"># Enter your password for hadoop user on "master"</span>
+</code></pre>
+</div>
+
+<p>Modify the privilege of the authorized_keys file on both vms:</p>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code>chmod 600 authorized_keys
+</code></pre>
+</div>
+
+<p>This way you can directly ssh into “master” and “slave01” without having to type passowrd everythime. However, since you have only configured ssh equivalent for “hadoop” user, you can only ssh into both machines when using “hadoop”. You “root” user won’t be able to have that function.</p>
+
+<h3 id="hadoop-installation">Hadoop Installation</h3>
+
+<p>Download hadoop installation tar file from <a href="http://mirror.stjschools.org/public/apache/hadoop/common/hadoop-2.6.5/" target="_blank">here</a>, I used hadoop 2.6.5 just to be safe.</p>
+
+<p>Use FileZilla to connect to both vms using “hadoop” user (not root), and upload the hadoop installation file to the “installer” folder.</p>
+
+<p>In “master”, unzip the tar file and rename it “hadoop2”</p>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code><span class="nb">cd </span>installer
+tar -zxvf hadoop-2.6.5.tar.gz
+mv hadoop-2.6.5 hadoop2
+</code></pre>
+</div>
+
+<h3 id="config-hadoop-environment-variables-on-vms">Config Hadoop Environment Variables on VMs</h3>
+
+<p>Similar to my first article on hadoop installation on Mac, here we need to config some hadoop environment variables:</p>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code><span class="c"># Go back to hadoop user root</span>
+<span class="nb">cd
+</span>vim .bashrc
+</code></pre>
+</div>
+
+<p>In vim, under “User specific aliases and functions”, type in this:</p>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code><span class="nb">export </span><span class="nv">JAVA_HOME</span><span class="o">=</span>/usr/java/jdk1.7.0_80
+<span class="nb">export </span><span class="nv">HADOOP_HOME</span><span class="o">=</span>/home/hadoop/installer/hadoop2
+<span class="nb">export </span><span class="nv">HADOOP_COMMON_LIB_NATIVE_DIR</span><span class="o">=</span><span class="k">${</span><span class="nv">HADOOP_HOME</span><span class="k">}</span>/lib/native
+<span class="nb">export </span><span class="nv">HADOOP_OPTS</span><span class="o">=</span><span class="s2">"-Djava.library.path=</span><span class="nv">$HADOOP_HOME</span><span class="s2">/lib"</span>
+<span class="c"># Append Java lib and Hadoop lib to CLASSPATH</span>
+<span class="nb">export </span><span class="nv">CLASSPATH</span><span class="o">=</span><span class="nv">$CLASSPATH</span>:<span class="nv">$JAVA_HOME</span>/lib:<span class="nv">$HADOOP_HOME</span>/lib
+<span class="c"># Append Java bin and Hadoop bin/sbin to PATH</span>
+<span class="nb">export </span><span class="nv">PATH</span><span class="o">=</span><span class="nv">$PATH</span>:<span class="nv">$JAVA_HOME</span>/bin:<span class="nv">$HADOOP_HOME</span>/bin:<span class="nv">$HADOOP_HOME</span>/sbin
+</code></pre>
+</div>
+
+<p>JAVA_HOME is where your jdk is installed and HADOOP_HOME is where your hadoop is just installed.</p>
+
+<p>After configuring .bashrc file, make it effective immediately (without restarting the vm):</p>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code>. .bashrc
+</code></pre>
+</div>
+
+<p>Copy the configured .bashrc file to “slave01” root directory using scp:</p>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code>scp .bashrc slave01:~
+</code></pre>
+</div>
+
+<p>Also enable the newly copied .bashrc file on slave01.</p>
+
+<h3 id="config-hadoop-application">Config Hadoop Application</h3>
+
+<h4 id="config-hadoop-environment">Config Hadoop Environment</h4>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code><span class="nb">cd</span> <span class="nv">$HADOOP_HOME</span>
+<span class="nb">cd </span>etc/hadoop
+vim hadoop-env.sh
+</code></pre>
+</div>
+
+<p>In vim, delete “export JAVA_HOME” line, replace it with:</p>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code><span class="nb">export </span><span class="nv">JAVA_HOME</span><span class="o">=</span>/usr/java/jdk1.7.0_80
+</code></pre>
+</div>
+
+<p>There is a “for” loop, after which you will find “#export HADOOP_HEAPSIZE=”. Make it like this:</p>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code><span class="nb">export </span><span class="nv">HADOOP_HEAPSIZE</span><span class="o">=</span>100
+</code></pre>
+</div>
+
+<h4 id="config-yarn-environment">Config YARN Environment</h4>
+
+<p>Leave vim and now configure yarn-evn.sh:</p>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code>vim yarn-evn.sh
+</code></pre>
+</div>
+
+<p>Set JAVA_HOME attribute in the first uncommented row:</p>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code><span class="nb">export </span><span class="nv">JAVA_HOME</span><span class="o">=</span>/usr/java/jdk1.7.0_80
+</code></pre>
+</div>
+
+<p>Go down to find one line:</p>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code><span class="nv">JAVA_HEAP_MAX</span><span class="o">=</span>-Xmx1000m
+</code></pre>
+</div>
+
+<p>Change it to this:</p>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code><span class="nv">JAVA_HEAP_MAX</span><span class="o">=</span>-Xmx300m
+</code></pre>
+</div>
+
+<p>There is also a line under this line saying:</p>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code><span class="c">#YARN_HEAPSIZE=1000</span>
+</code></pre>
+</div>
+
+<p>Uncomment this line and make “1000” to 100.</p>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code><span class="nv">YARN_HEAPSIZE</span><span class="o">=</span>100
+</code></pre>
+</div>
+
+<p>Save and quit vim.</p>
+
+<h4 id="config-mapreduce-environment">Config MapReduce Environment</h4>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code>vim mapred-env.sh
+</code></pre>
+</div>
+
+<p>Uncomment the JAVA_HOME line and make the same Java home change. Also in the next line make “1000” to “100”.</p>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code><span class="nb">export </span><span class="nv">JAVA_HOME</span><span class="o">=</span>/usr/java/jdk1.7.0_80
+<span class="nb">export </span><span class="nv">HADOOP_JOB_HISTORYSERVER_HEAPSIZE</span><span class="o">=</span>100
+</code></pre>
+</div>
+
+<p>Save and quit vim.</p>
+
+<h4 id="config-slaves">Config Slaves</h4>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code>vim slaves
+</code></pre>
+</div>
+
+<p>There will be only one line in the “slaves” file: localhost. Delete it and replace it with “slave01”. That is because we configured the only slave machine name as “slave01” (step 2.3 in previous section). After configuration the “slaves” file should look like this:</p>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code>slave01
+</code></pre>
+</div>
+
+<h4 id="config-core-sitexml">Config core-site.xml</h4>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code>vim core-site.xml
+</code></pre>
+</div>
+
+<p>Replace the <configuration></configuration> part with the following. This is to configure the default file system and the temp dir location.</p>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code>&lt;configuration&gt;
+        &lt;property&gt;
+                &lt;name&gt;fs.defaultFS&lt;/name&gt;
+                &lt;value&gt;hdfs://master:9000&lt;/value&gt;
+        &lt;/property&gt;
+        &lt;property&gt;
+                &lt;name&gt;hadoop.tmp.dir&lt;/name&gt;
+                &lt;value&gt;/home/hadoop/tmp&lt;/value&gt;
+        &lt;/property&gt;
+&lt;/configuration&gt;
+</code></pre>
+</div>
+
+<p>Save and exit vim. In the config file we specified a temp folder, “tmp”, directly under the hadoop user folder. So we need to create the physical folder in the vms as well. The easiest way to do this is:</p>
+
+<ol>
+  <li>SSH into master using hadoop as the user.</li>
+  <li>Make sure you are in “hadoop” home folder.
+3.</li>
+</ol>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code>mkdir tmp
+</code></pre>
+</div>
+
+<p>Also do the same thing for “slave01”.</p>
+
+<h4 id="config-hdfs-sitexml">Config hdfs-site.xml</h4>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code>vim hdfs-site.xml
+</code></pre>
+</div>
+
+<p>Replace the <configuration></configuration> with the following:</p>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code>&lt;configuration&gt;
+        &lt;property&gt;
+                &lt;name&gt;dfs.namenode.secondary.http-address&lt;/name&gt;
+                &lt;value&gt;master:50090&lt;/value&gt;
+        &lt;/property&gt;
+        
+        &lt;property&gt;
+                &lt;name&gt;dfs.namenode.name.dir&lt;/name&gt;
+                &lt;value&gt;/home/hadoop/data/dfs/name&lt;/value&gt;
+        &lt;/property&gt;
+        
+        &lt;property&gt;
+                &lt;name&gt;dfs.datanode.data.dir&lt;/name&gt;
+                &lt;value&gt;/home/hadoop/data/dfs/data&lt;/value&gt;
+        &lt;/property&gt;
+
+        &lt;property&gt;
+                &lt;name&gt;dfs.replication&lt;/name&gt;
+                &lt;value&gt;1&lt;/value&gt;
+        &lt;/property&gt;
+
+        &lt;property&gt;
+                &lt;name&gt;dfs.webhdfs.enabled&lt;/name&gt;
+                &lt;value&gt;true&lt;/value&gt;
+        &lt;/property&gt;
+&lt;/configuration&gt;
+</code></pre>
+</div>
+
+<p>The above config specifies the following:</p>
+<ol>
+  <li>Secondary name node address</li>
+  <li>Name node directory</li>
+  <li>Data node directory</li>
+  <li>Number of replication of data (just 1 replication)</li>
+  <li>Enable WebHDFS</li>
+</ol>
+
+<p>You also need to create the above specified folders (name node dir and data node dir) for both “master” and “slave01”, under hadoop user folder.</p>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code>mkdir -p data/dfs/data
+mkdir -p data/dfs/name
+</code></pre>
+</div>
+
+<h4 id="config-mapred-sitexml">Config mapred-site.xml</h4>
+
+<p>In “master”, copy mapred-site.xml.template to the same directory and name it mapred-site.xml:</p>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code>cp mapred-site.xml.template mapred-site.xml
+vim mapred-site.xml
+</code></pre>
+</div>
+
+<p>Replace <configuration></configuration> with the following:</p>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code>&lt;configuration&gt;
+        &lt;property&gt;
+                &lt;name&gt;mapreduce.framework.name&lt;/name&gt;
+                &lt;value&gt;yarn&lt;/value&gt;
+        &lt;/property&gt;
+
+        &lt;property&gt;
+                &lt;name&gt;mapreduce.jobhistory.address&lt;/name&gt;
+                &lt;value&gt;master:10020&lt;/value&gt;
+        &lt;/property&gt;
+
+        &lt;property&gt;
+                &lt;name&gt;mapreduce.jobhistory.webapp.address&lt;/name&gt;
+                &lt;value&gt;master:19888&lt;/value&gt;
+        &lt;/property&gt;
+
+        &lt;property&gt;
+                &lt;name&gt;mapreduce.map.memory.mb&lt;/name&gt;
+                &lt;value&gt;300&lt;/value&gt;
+        &lt;/property&gt;
+
+        &lt;property&gt;
+                &lt;name&gt;mapreduce.reduce.memory.mb&lt;/name&gt;
+                &lt;value&gt;300&lt;/value&gt;
+        &lt;/property&gt;
+
+        &lt;property&gt;
+                &lt;name&gt;yarn.app.mapreduce.am.resource.mb&lt;/name&gt;
+                &lt;value&gt;100&lt;/value&gt;
+        &lt;/property&gt;
+&lt;/configuration&gt;
+</code></pre>
+</div>
+
+<p>In above file we configured the following:</p>
+<ol>
+  <li>Set the resource manager for MapReduce as YARN</li>
+  <li>Set the job history address</li>
+  <li>Set the job history web app address</li>
+  <li>Set the memory allocated for a map task to be 300 MB</li>
+  <li>Set the memory allocated for a reduce task to be 300 MB</li>
+  <li>Set the memory for YARN over MapReduce to be 100 MB</li>
+</ol>
+
+<h4 id="config-yarn-sitexml">Config yarn-site.xml</h4>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code>vim yarn-site.xml
+</code></pre>
+</div>
+
+<configuration>
+        <property>
+                <name>yarn.nodemanager.aux-services</name>
+                <value>mapreduce_shuffle</value>
+        </property>
+
+        <property>
+                <description>The host name of the RM.</description>
+                <name>yarn.resourcemanager.hostname</name>
+                <value>master</value>
+        </property>
+
+        <property>
+                <description>The address of the applications manager interface in the RM.</description>
+                <name>yarn.resourcemanager.address</name>
+                <value>${yarn.resourcemanager.hostname}:8032</value>
+        </property>
+
+        <property>
+                <description>The address of the scheduler interface.</description>
+                <name>yarn.resourcemanager.scheduler.address</name>
+                <value>${yarn.resourcemanager.hostname}:8030</value>
+        </property>
+
+        <property>
+                <description>The http address of the RM web application.</description>
+                <name>yarn.resourcemanager.webapp.address</name>
+                <value>${yarn.resourcemanager.hostname}:8088</value>
+        </property>
+
+        <property>
+                <description>The https address of the RM web application.</description>
+                <name>yarn.resourcemanager.webapp.https.address</name>
+                <value>${yarn.resourcemanager.hostname}:8090</value>
+        </property>
+        
+        <property>
+                <name>yarn.resourcemanager.resource-tracker.address</name>
+                <value>${yarn.resourcemanager.hostname}:8031</value>
+        </property>
+        
+        <property>
+                <description>The address of the RM admin interface.</description>
+                <name>yarn.resourcemanager.admin.address</name>
+                <value>${yarn.resourcemanager.hostname}:8033</value>
+        </property>
+        
+        <property>
+                <description>The minimum allocation for every container request at the RM, in MBs. Memory requests lower than this won't take effect, and the specified value will get allocated at minimum.</description>
+                <name>yarn.scheduler.minimum-allocation-mb</name>
+                <value>300</value>
+        </property>
+        
+        <property>
+                <description>The maximum allocation for every container request at the RM, in MBs. Memory requests higher than this won't take effect, and will get capped to this value.</description>
+                <name>yarn.scheduler.maximum-allocation-mb</name>
+                <value>1024</value>
+        </property>
+        
+        <property>
+                <description>Ratio between virtual memory to physical memory when setting memory limits for containers. Container allocations are expressed in terms of physical memory, and virtual memory usage is allowed to exceed this allocation by this ratio.</description>
+                <name>yarn.nodemanager.vmem-pmem-ratio</name>
+                <value>6.1</value>
+        </property>
+</configuration>
+
+<p>You are done with hadoop “master” configuration!</p>
+
+<h4 id="config-hadoop-on-slave01">Config Hadoop on “slave01”</h4>
+
+<p>Because you haven’t done anything (besides creating some empty folders) on “slave01” yet, you need to directly copy your configured “hadoop2” folder from “master” to “slave01”.</p>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code><span class="c"># This is "cd [space]" to go back to "master" hadoop user root</span>
+<span class="nb">cd 
+cd </span>installer
+scp -r hadoop2 slave01:~/installer/
+</code></pre>
+</div>
+
+<p>While the files are being copied, we can make the environment config effective by going to “master” and run:</p>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code>. .bashrc
+</code></pre>
+</div>
+
+<p>After file copy, run the same command for “slave01”.</p>
+
+<h4 id="format-hadoop">Format Hadoop</h4>
+
+<p>Go to ssh “master”, run the following format command to format the namenode.</p>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code>hadoop namenode -format
+</code></pre>
+</div>
+
+<p>Now start HDFS:</p>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code>start-dfs.sh
+start-yarn.sh
+<span class="c"># To see your processes:</span>
+jps
+</code></pre>
+</div>
+
+<p>You should have 4 items in there: Jps, Namenode, SecondaryNamenode, ResourceManager.
+In “slave01”, run the same command and do “jps”, you should have DataNode, NodeManager and Jps in there.</p>
+
+<p>If you don’t have secondary namenode, check your core-site.xml and delete (rm -rf *) the content of data/dfs/data and data/dfs/name (corresponding to datanode and namenode) folder, and stop and reformat hadoop.</p>
+
+<h3 id="test-hadoop">Test Hadoop</h3>
+
+<h4 id="create-test-file">Create Test File</h4>
+
+<p>Create a random text file, in this case, we will name it 1.txt. The content can be:</p>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code>hadoop hadoop spark storm
+java java c C# c
+java spark
+</code></pre>
+</div>
+
+<p>Put it into hdfs /data/wordcount folder</p>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code>hdfs dfs -mkdir /data
+hdfs dfs -mkdir /data/wordcount
+hdfs dfs -put 1.txt /data/wordcount
+</code></pre>
+</div>
+
+<p>Run hadoop command to create folders for test:</p>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code><span class="nb">cd</span> <span class="nv">$HADOOP_HOME</span>
+<span class="nb">cd </span>share/hadoop/mapreduce/
+<span class="c"># Invoke "wordcount" function in the example jar file.</span>
+<span class="c"># "/data/wordcount" folder is the hdfs input folder (every file will be read)</span>
+<span class="c"># "/data/wordcount/output" is the output folder: it cannot exist before running this command</span>
+hadoop jar hadoop-mapreduce-examples-2.6.5.jar wordcount /data/wordcount /data/wordcount/output
+
+<span class="c"># To view result after running</span>
+hdfs dfs -cat /data/wordcount/output/<span class="k">*</span>
+
+<span class="c"># To view result file names</span>
+hdfs dfs -ls /data/wordcount/output
+</code></pre>
+</div>
+
+<p>Congrats! After so long you have finally installed and configured your hadoop application on a master and slave machine, and get your example code running. If you can successfully get the mapreduce example to run it means everything is correct for you.</p>
+
+<p>Now the only thing left is to create snapshots of both your machines so you can rollback to the initiation state if you encountered errors in the future (hopefully that won’t happen).</p>
+
+    <div class="bdsharebuttonbox">
+        <a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信"></a>
+        <a href="#" class="bds_douban" data-cmd="douban" title="分享到豆瓣网"></a>
+        <a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+        <a href="#" class="bds_tqq" data-cmd="tqq" title="分享到腾讯微博"></a>
+        <a href="#" class="bds_renren" data-cmd="renren" title="分享到人人网"></a>
+        <a href="#" class="bds_mail" data-cmd="mail" title="分享到邮件分享"></a>
+        <a href="#" class="bds_more" data-cmd="more"></a>
+    </div>
+    <nav class="article-previous fn-clear">
+        
+        <a class="prev" href="/hadoop/2017/06/04/apache-flume-hadoop.html" rel="bookmark">&laquo;&nbsp;Apache Flume</a>
+        
+        
+    </nav>
+    <div class="comment">
+        
+        
+    </div>
+</div>
+
+                </div>
+                <div class="aside">
+                    <div class="aside-contact">
+                        <h4 class="title">About me</h4>
+                        <div class="det fn-clear">
+                            <div class="det-image">
+                                <img src="/images/header.jpg" />
+                            </div>
+                            <div class="det-text">
+                                <p>Windows programmer trying to get adapted to the world</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="aside-item">
+                        <h4 class="title">Recent Posts</h4>
+                        <ul class="list">
+                            
+                                <li><a href="http://localhost:4000/hadoop/2017/09/24/spark-installation-from-scratch.html" title="Spark Installation and Configuration from Scratch" rel="bookmark">Spark Installation and Configuration from Scratch</a></li>
+                            
+                                <li><a href="http://localhost:4000/hadoop/2017/06/04/apache-flume-hadoop.html" title="Apache Flume" rel="bookmark">Apache Flume</a></li>
+                            
+                                <li><a href="http://localhost:4000/hadoop/2017/05/18/a-high-level-experiment-with-hadoop-cloudera.html" title="A High Level Experiment with Hadoop (Cloudera)" rel="bookmark">A High Level Experiment with Hadoop (Cloudera)</a></li>
+                            
+                                <li><a href="http://localhost:4000/hadoop/2017/05/01/hadoop-project-setup.html" title="Hadoop Project Setup" rel="bookmark">Hadoop Project Setup</a></li>
+                            
+                                <li><a href="http://localhost:4000/hadoop/2017/03/14/file-copy-in-hadoop.html" title="File Copy in HDFS" rel="bookmark">File Copy in HDFS</a></li>
+                            
+                                <li><a href="http://localhost:4000/hadoop/2017/03/12/hadoop-first-config-pseudodistributed.html" title="Hadoop Configuaration Pseudodistributed Mode" rel="bookmark">Hadoop Configuaration Pseudodistributed Mode</a></li>
+                            
+                        </ul>
+                    </div>
+
+                    <div class="aside-item">
+                        <h4 class="title">Links</h4>
+                        <ul class="list">
+                            
+                                
+                                    
+                                    <li><a href="http://jekyllrb.com" title="Jekyll" target="_blank">Jekyll</a></li>
+                                    
+                                    <li><a href="http://www.zhanxin.info/themes.html" title="Jekyll Theme" target="_blank">Jekyll Theme</a></li>
+                                    
+                                
+                            
+                                
+                            
+                        </ul>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="foot">
+            <div class="footer">
+                <p>Copyright 2013. All rights reserved. Powered by <a href="http://jekyllrb.com" target="_blank">Jekyll</a>, Design by <a href="http://www.zhanxin.info" target="_blank">zhanxin.info</a>.</p>
+            </div>
+        </div>
+        <script type="text/javascript" src="http://cdn.bootcss.com/jquery/1.8.3/jquery.min.js"></script>
+        <script type="text/javascript">
+            console.log(' %c9leg.com', 'background-image:-webkit-gradient( linear, left top, right top, color-stop(0, #f22), color-stop(0.15, #f2f), color-stop(0.3, #22f), color-stop(0.45, #2ff), color-stop(0.6, #2f2),color-stop(0.75, #2f2), color-stop(0.9, #ff2), color-stop(1, #f22) );color:transparent;-webkit-background-clip: text;font-size:5em;');
+        </script>
+        
+        
+    </body>
+</html>

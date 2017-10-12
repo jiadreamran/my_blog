@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Hadoop Project Setup - 9leg</title>
+        <!-- meta -->
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+        <meta name="generator" content="Jekyll" />
+        <meta name="author" content="jiadreamran" />
+        <meta name="description" content="java,scala" />
+        <meta name="keywords" content="" />
+        <meta name="robots" content="index,nofollow" />
+        <!-- atom -->
+        <link rel="alternate" type="application/atom+xml" title="Recent Entries" href="http://localhost:4000/atom.xml" />
+        <link rel="shortcut icon" href="/images/shortcut.jpg" type="image/x-icon" />
+        <!-- font-awesome -->
+        <link href="http://cdn.bootcss.com/font-awesome/3.2.1/css/font-awesome.min.css" rel="stylesheet">
+        <!--<link href='http://fonts.useso.com/css?family=Spirax' rel='stylesheet' type='text/css'>-->
+        <link rel="stylesheet" href="http://localhost:4000/css/syntax.css">
+        <link rel="stylesheet" href="http://localhost:4000/css/main.css">
+        
+        
+
+    </head>
+    <body>
+        <div class="head fn-clear">
+            <div class="header">
+                <h1 class="logo">
+                    <a href="http://localhost:4000"><i class="icon-anchor"></i></a>
+                </h1>
+                <nav class="nav">
+                    <ul>
+                        
+                        
+                        
+                        <li class="nav-item ">
+                            <a href="http://localhost:4000/index.html">
+                                Front Page
+                            </a>
+                            
+                        </li>
+                        
+                        
+                        
+                        <li class="nav-item ">
+                            <a href="http://localhost:4000/categories.html">
+                                Categories
+                            </a>
+                            
+                        </li>
+                        
+                        
+                        
+                        <li class="nav-item ">
+                            <a href="http://localhost:4000/archives.html">
+                                Archives
+                            </a>
+                            
+                        </li>
+                        
+                        
+                        
+                        <li class="nav-item ">
+                            <a href="http://localhost:4000/about.html">
+                                About
+                            </a>
+                            
+                        </li>
+                        
+                        
+                        
+                        <li class="nav-item ">
+                            <a href="http://localhost:4000/links.html">
+                                Links
+                            </a>
+                            
+                        </li>
+                        
+                    </ul>
+                </nav>
+                <div class="follow">
+                    
+                    <a href="/atom.xml" target="_blank"><i class="icon-rss"></i></a>
+                    
+                    <a href="http://weibo.com/" target="_blank"><i class="icon-weibo"></i></a>
+                    
+                    <a href="http://facebook.com/" target="_blank"><i class="icon-facebook"></i></a>
+                    
+                    <a href="https://github.com/zJiaJun/" target="_blank"><i class="icon-github-alt"></i></a>
+                    
+                    <a href="https://twitter.com/zhujiajun_me" target="_blank"><i class="icon-twitter"></i></a>
+                    
+                    <a href="https://plus.google.com/116595571760191938657/about" target="_blank"><i class="icon-google-plus"></i></a>
+                    
+                </div>
+            </div>
+        </div>
+        <div class="contain fn-clear">
+            <div class="container fn-clear">
+                <div class="main">
+                    <div class="article article-post">
+    <h2 class="title">Hadoop Project Setup</h2>
+    <div class="info">
+        <span class="info-title"><i class="icon-calendar"></i> Published: </span>
+        <span class="info-date">01 May 2017</span>
+        <span class="info-title"><i class="icon-folder-open"></i> Category: </span>
+        <span class="info-link"><a href="http://localhost:4000/categories.html#Hadoop-ref" >Hadoop</a></span>
+    </div>
+    <p>OK. I had been officially struggling for 3 days to setup the Eclipse environment just to make it work with the JDK I installed for hadoop, and I learned the lesson in a hard way.</p>
+
+<p>Previously I stated in <a href="hadoop-installation.html" target="_blank">this article</a> that JDK 7 is needed, so I have to download the correct Eclipse version.</p>
+
+<p>After struggling for so long time, including Eclipse cannot be opened error, extraction error, JVM version error, etc., I finally figured out this is the version that is working for my Mac:
+Elicpse Mars 2. To download it, click <a href="https://www.eclipse.org/downloads/download.php?file=/technology/epp/downloads/release/mars/2/eclipse-java-mars-2-macosx-cocoa-x86_64.tar.gz" target="_blank">here</a>.</p>
+
+<p>You can directly double click on the tar.gz file so the Eclipse application package will be extracted. I also modified the eclipse.ini file to specify the Java path (ini file located inside Eclipse package, to reveal it, right click on Eclipse &gt; Show Package Conents &gt; Contents &gt; Eclipse &gt; eclipse.ini). I append the following content before “-vmargs”:</p>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code>-vm
+/Library/Java/JavaVirtualMachines/jdk1.7.0_80.jdk/Contents/home/bin/java
+</code></pre>
+</div>
+
+<p>In order to create my first MapReduce project (don’t know what it would be like at this moment), I need to have Maven installed on my Mac (yes, I am that far behind). To install Maven, I went to <a href="http://maven.apache.org/download.cgi" target="_blank">here</a>. Then I downloaded the 3.5.0 version of the tar.gz file, and extract it to one of my Desktop folder (“/Users/jiadreamran/Desktop/Coding/maven/apache-maven-3.5.0”).</p>
+
+<p>Just like any other tar.gz file, I need to register the maven command to PATH environment variable. So I modified my ~/.bash_profile to be like this:</p>
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code><span class="nb">export </span><span class="nv">JAVA_HOME</span><span class="o">=</span>/Library/Java/JavaVirtualMachines/jdk1.7.0_80.jdk/Contents/Home
+<span class="nb">export </span><span class="nv">HADOOP_HOME</span><span class="o">=</span>/Users/jiadreamran/Desktop/hadoop/hadoop-2.7.3
+<span class="nb">export </span><span class="nv">MAVEN_HOME</span><span class="o">=</span>/Users/jiadreamran/Desktop/Coding/maven/apache-maven-3.5.0
+<span class="nb">export </span><span class="nv">PATH</span><span class="o">=</span><span class="nv">$PATH</span>:<span class="nv">$HADOOP_HOME</span>/bin:<span class="nv">$HADOOP_HOME</span>/sbin:<span class="nv">$MAVEN_HOME</span>/bin
+<span class="nb">export </span><span class="nv">HADOOP_CONF_DIR</span><span class="o">=</span>/Users/jiadreamran/Desktop/hadoop/hadoop-2.7.3-jiadreamran-config
+
+<span class="nb">alias </span><span class="nv">hstart</span><span class="o">=</span><span class="s2">"/Users/jiadreamran/Desktop/hadoop/hadoop-2.7.3/sbin/start-dfs.sh;/Users/jiadreamran/Desktop/hadoop/hadoop-2.7.3/sbin/start-yarn.sh"</span>
+
+<span class="nb">alias </span><span class="nv">hstop</span><span class="o">=</span><span class="s2">"/Users/jiadreamran/Desktop/hadoop/hadoop-2.7.3/sbin/stop-yarn.sh;/Users/jiadreamran/Desktop/hadoop/hadoop-2.7.3/sbin/stop-dfs.sh"</span>
+</code></pre>
+</div>
+
+<p>Note that I added “MAVEN_HOME” and append it (plus the “/bin” folder) to the end of the “PATH” variable.</p>
+
+<p>If you successfully completed the above steps, the following command should give you the maven version:</p>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code>mvn -v
+</code></pre>
+</div>
+
+<p>Then I started to create the <a href="https://github.com/jiadreamran/my_blog/blob/gh-pages/_posts/assets/pom.xml" target="_blank">pom.xml</a> file. This pom file tells maven how to build the project and what would be the dependencies.</p>
+
+<p>Then I simply point my terminal to the folder that contains the pom file, and run the following command to build the project using eclipse:</p>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code>mvn eclipse:eclipse -DdownloadSources<span class="o">=</span><span class="nb">true</span> -DdownloadJavadocs<span class="o">=</span><span class="nb">true</span>
+</code></pre>
+</div>
+
+<p>After run the above command for 90 seconds, my project was successfully built. I didn’t notice any change in the folder containing the pom file but I still think something is happening. More on that later.</p>
+
+    <div class="bdsharebuttonbox">
+        <a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信"></a>
+        <a href="#" class="bds_douban" data-cmd="douban" title="分享到豆瓣网"></a>
+        <a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+        <a href="#" class="bds_tqq" data-cmd="tqq" title="分享到腾讯微博"></a>
+        <a href="#" class="bds_renren" data-cmd="renren" title="分享到人人网"></a>
+        <a href="#" class="bds_mail" data-cmd="mail" title="分享到邮件分享"></a>
+        <a href="#" class="bds_more" data-cmd="more"></a>
+    </div>
+    <nav class="article-previous fn-clear">
+        
+        <a class="prev" href="/hadoop/2017/03/14/file-copy-in-hadoop.html" rel="bookmark">&laquo;&nbsp;File Copy in HDFS</a>
+        
+        
+        <a class="next" href="/hadoop/2017/05/18/a-high-level-experiment-with-hadoop-cloudera.html" rel="bookmark">A High Level Experiment with...&nbsp;&raquo;</a>
+        
+    </nav>
+    <div class="comment">
+        
+        
+    </div>
+</div>
+
+                </div>
+                <div class="aside">
+                    <div class="aside-contact">
+                        <h4 class="title">About me</h4>
+                        <div class="det fn-clear">
+                            <div class="det-image">
+                                <img src="/images/header.jpg" />
+                            </div>
+                            <div class="det-text">
+                                <p>Windows programmer trying to get adapted to the world</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="aside-item">
+                        <h4 class="title">Recent Posts</h4>
+                        <ul class="list">
+                            
+                                <li><a href="http://localhost:4000/hadoop/2017/09/24/spark-installation-from-scratch.html" title="Spark Installation and Configuration from Scratch" rel="bookmark">Spark Installation and Configuration from Scratch</a></li>
+                            
+                                <li><a href="http://localhost:4000/hadoop/2017/06/04/apache-flume-hadoop.html" title="Apache Flume" rel="bookmark">Apache Flume</a></li>
+                            
+                                <li><a href="http://localhost:4000/hadoop/2017/05/18/a-high-level-experiment-with-hadoop-cloudera.html" title="A High Level Experiment with Hadoop (Cloudera)" rel="bookmark">A High Level Experiment with Hadoop (Cloudera)</a></li>
+                            
+                                <li><a href="http://localhost:4000/hadoop/2017/05/01/hadoop-project-setup.html" title="Hadoop Project Setup" rel="bookmark">Hadoop Project Setup</a></li>
+                            
+                                <li><a href="http://localhost:4000/hadoop/2017/03/14/file-copy-in-hadoop.html" title="File Copy in HDFS" rel="bookmark">File Copy in HDFS</a></li>
+                            
+                                <li><a href="http://localhost:4000/hadoop/2017/03/12/hadoop-first-config-pseudodistributed.html" title="Hadoop Configuaration Pseudodistributed Mode" rel="bookmark">Hadoop Configuaration Pseudodistributed Mode</a></li>
+                            
+                        </ul>
+                    </div>
+
+                    <div class="aside-item">
+                        <h4 class="title">Links</h4>
+                        <ul class="list">
+                            
+                                
+                                    
+                                    <li><a href="http://jekyllrb.com" title="Jekyll" target="_blank">Jekyll</a></li>
+                                    
+                                    <li><a href="http://www.zhanxin.info/themes.html" title="Jekyll Theme" target="_blank">Jekyll Theme</a></li>
+                                    
+                                
+                            
+                                
+                            
+                        </ul>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="foot">
+            <div class="footer">
+                <p>Copyright 2013. All rights reserved. Powered by <a href="http://jekyllrb.com" target="_blank">Jekyll</a>, Design by <a href="http://www.zhanxin.info" target="_blank">zhanxin.info</a>.</p>
+            </div>
+        </div>
+        <script type="text/javascript" src="http://cdn.bootcss.com/jquery/1.8.3/jquery.min.js"></script>
+        <script type="text/javascript">
+            console.log(' %c9leg.com', 'background-image:-webkit-gradient( linear, left top, right top, color-stop(0, #f22), color-stop(0.15, #f2f), color-stop(0.3, #22f), color-stop(0.45, #2ff), color-stop(0.6, #2f2),color-stop(0.75, #2f2), color-stop(0.9, #ff2), color-stop(1, #f22) );color:transparent;-webkit-background-clip: text;font-size:5em;');
+        </script>
+        
+        
+    </body>
+</html>
