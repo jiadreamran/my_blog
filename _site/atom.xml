@@ -4,7 +4,7 @@
    <title>9leg</title>
    <link href="http://localhost:4000/atom.xml" rel="self" type="application/atom+xml"/>
    <link href="http://localhost:4000" rel="alternate" type="text/html" />
-   <updated>2017-10-12T00:29:51-04:00</updated>
+   <updated>2017-10-12T00:37:40-04:00</updated>
    <id>http://localhost:4000</id>
    <author>
      <name>jiadreamran</name>
@@ -565,71 +565,73 @@ vim mapred-site.xml
 &lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
 
-&lt;configuration&gt;
-        &lt;property&gt;
-                &lt;name&gt;yarn.nodemanager.aux-services&lt;/name&gt;
-                &lt;value&gt;mapreduce_shuffle&lt;/value&gt;
-        &lt;/property&gt;
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&amp;lt;configuration&amp;gt;
+        &amp;lt;property&amp;gt;
+                &amp;lt;name&amp;gt;yarn.nodemanager.aux-services&amp;lt;/name&amp;gt;
+                &amp;lt;value&amp;gt;mapreduce_shuffle&amp;lt;/value&amp;gt;
+        &amp;lt;/property&amp;gt;
 
-        &lt;property&gt;
-                &lt;description&gt;The host name of the RM.&lt;/description&gt;
-                &lt;name&gt;yarn.resourcemanager.hostname&lt;/name&gt;
-                &lt;value&gt;master&lt;/value&gt;
-        &lt;/property&gt;
+        &amp;lt;property&amp;gt;
+                &amp;lt;description&amp;gt;The host name of the RM.&amp;lt;/description&amp;gt;
+                &amp;lt;name&amp;gt;yarn.resourcemanager.hostname&amp;lt;/name&amp;gt;
+                &amp;lt;value&amp;gt;master&amp;lt;/value&amp;gt;
+        &amp;lt;/property&amp;gt;
 
-        &lt;property&gt;
-                &lt;description&gt;The address of the applications manager interface in the RM.&lt;/description&gt;
-                &lt;name&gt;yarn.resourcemanager.address&lt;/name&gt;
-                &lt;value&gt;${yarn.resourcemanager.hostname}:8032&lt;/value&gt;
-        &lt;/property&gt;
+        &amp;lt;property&amp;gt;
+                &amp;lt;description&amp;gt;The address of the applications manager interface &lt;span class=&quot;k&quot;&gt;in &lt;/span&gt;the RM.&amp;lt;/description&amp;gt;
+                &amp;lt;name&amp;gt;yarn.resourcemanager.address&amp;lt;/name&amp;gt;
+                &amp;lt;value&amp;gt;&lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;yarn&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.resourcemanager.hostname&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt;:8032&amp;lt;/value&amp;gt;
+        &amp;lt;/property&amp;gt;
 
-        &lt;property&gt;
-                &lt;description&gt;The address of the scheduler interface.&lt;/description&gt;
-                &lt;name&gt;yarn.resourcemanager.scheduler.address&lt;/name&gt;
-                &lt;value&gt;${yarn.resourcemanager.hostname}:8030&lt;/value&gt;
-        &lt;/property&gt;
+        &amp;lt;property&amp;gt;
+                &amp;lt;description&amp;gt;The address of the scheduler interface.&amp;lt;/description&amp;gt;
+                &amp;lt;name&amp;gt;yarn.resourcemanager.scheduler.address&amp;lt;/name&amp;gt;
+                &amp;lt;value&amp;gt;&lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;yarn&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.resourcemanager.hostname&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt;:8030&amp;lt;/value&amp;gt;
+        &amp;lt;/property&amp;gt;
 
-        &lt;property&gt;
-                &lt;description&gt;The http address of the RM web application.&lt;/description&gt;
-                &lt;name&gt;yarn.resourcemanager.webapp.address&lt;/name&gt;
-                &lt;value&gt;${yarn.resourcemanager.hostname}:8088&lt;/value&gt;
-        &lt;/property&gt;
+        &amp;lt;property&amp;gt;
+                &amp;lt;description&amp;gt;The http address of the RM web application.&amp;lt;/description&amp;gt;
+                &amp;lt;name&amp;gt;yarn.resourcemanager.webapp.address&amp;lt;/name&amp;gt;
+                &amp;lt;value&amp;gt;&lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;yarn&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.resourcemanager.hostname&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt;:8088&amp;lt;/value&amp;gt;
+        &amp;lt;/property&amp;gt;
 
-        &lt;property&gt;
-                &lt;description&gt;The https address of the RM web application.&lt;/description&gt;
-                &lt;name&gt;yarn.resourcemanager.webapp.https.address&lt;/name&gt;
-                &lt;value&gt;${yarn.resourcemanager.hostname}:8090&lt;/value&gt;
-        &lt;/property&gt;
+        &amp;lt;property&amp;gt;
+                &amp;lt;description&amp;gt;The https address of the RM web application.&amp;lt;/description&amp;gt;
+                &amp;lt;name&amp;gt;yarn.resourcemanager.webapp.https.address&amp;lt;/name&amp;gt;
+                &amp;lt;value&amp;gt;&lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;yarn&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.resourcemanager.hostname&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt;:8090&amp;lt;/value&amp;gt;
+        &amp;lt;/property&amp;gt;
         
-        &lt;property&gt;
-                &lt;name&gt;yarn.resourcemanager.resource-tracker.address&lt;/name&gt;
-                &lt;value&gt;${yarn.resourcemanager.hostname}:8031&lt;/value&gt;
-        &lt;/property&gt;
+        &amp;lt;property&amp;gt;
+                &amp;lt;name&amp;gt;yarn.resourcemanager.resource-tracker.address&amp;lt;/name&amp;gt;
+                &amp;lt;value&amp;gt;&lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;yarn&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.resourcemanager.hostname&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt;:8031&amp;lt;/value&amp;gt;
+        &amp;lt;/property&amp;gt;
         
-        &lt;property&gt;
-                &lt;description&gt;The address of the RM admin interface.&lt;/description&gt;
-                &lt;name&gt;yarn.resourcemanager.admin.address&lt;/name&gt;
-                &lt;value&gt;${yarn.resourcemanager.hostname}:8033&lt;/value&gt;
-        &lt;/property&gt;
+        &amp;lt;property&amp;gt;
+                &amp;lt;description&amp;gt;The address of the RM admin interface.&amp;lt;/description&amp;gt;
+                &amp;lt;name&amp;gt;yarn.resourcemanager.admin.address&amp;lt;/name&amp;gt;
+                &amp;lt;value&amp;gt;&lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;yarn&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.resourcemanager.hostname&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt;:8033&amp;lt;/value&amp;gt;
+        &amp;lt;/property&amp;gt;
         
-        &lt;property&gt;
-                &lt;description&gt;The minimum allocation for every container request at the RM, in MBs. Memory requests lower than this won't take effect, and the specified value will get allocated at minimum.&lt;/description&gt;
-                &lt;name&gt;yarn.scheduler.minimum-allocation-mb&lt;/name&gt;
-                &lt;value&gt;300&lt;/value&gt;
-        &lt;/property&gt;
+        &amp;lt;property&amp;gt;
+                &amp;lt;description&amp;gt;The minimum allocation &lt;span class=&quot;k&quot;&gt;for &lt;/span&gt;every container request at the RM, &lt;span class=&quot;k&quot;&gt;in &lt;/span&gt;MBs. Memory requests lower than this won&lt;span class=&quot;s1&quot;&gt;'t take effect, and the specified value will get allocated at minimum.&amp;lt;/description&amp;gt;
+                &amp;lt;name&amp;gt;yarn.scheduler.minimum-allocation-mb&amp;lt;/name&amp;gt;
+                &amp;lt;value&amp;gt;300&amp;lt;/value&amp;gt;
+        &amp;lt;/property&amp;gt;
         
-        &lt;property&gt;
-                &lt;description&gt;The maximum allocation for every container request at the RM, in MBs. Memory requests higher than this won't take effect, and will get capped to this value.&lt;/description&gt;
-                &lt;name&gt;yarn.scheduler.maximum-allocation-mb&lt;/name&gt;
-                &lt;value&gt;1024&lt;/value&gt;
-        &lt;/property&gt;
+        &amp;lt;property&amp;gt;
+                &amp;lt;description&amp;gt;The maximum allocation for every container request at the RM, in MBs. Memory requests higher than this won'&lt;/span&gt;t take effect, and will get capped to this value.&amp;lt;/description&amp;gt;
+                &amp;lt;name&amp;gt;yarn.scheduler.maximum-allocation-mb&amp;lt;/name&amp;gt;
+                &amp;lt;value&amp;gt;1024&amp;lt;/value&amp;gt;
+        &amp;lt;/property&amp;gt;
         
-        &lt;property&gt;
-                &lt;description&gt;Ratio between virtual memory to physical memory when setting memory limits for containers. Container allocations are expressed in terms of physical memory, and virtual memory usage is allowed to exceed this allocation by this ratio.&lt;/description&gt;
-                &lt;name&gt;yarn.nodemanager.vmem-pmem-ratio&lt;/name&gt;
-                &lt;value&gt;6.1&lt;/value&gt;
-        &lt;/property&gt;
-&lt;/configuration&gt;
+        &amp;lt;property&amp;gt;
+                &amp;lt;description&amp;gt;Ratio between virtual memory to physical memory when setting memory limits &lt;span class=&quot;k&quot;&gt;for &lt;/span&gt;containers. Container allocations are expressed &lt;span class=&quot;k&quot;&gt;in &lt;/span&gt;terms of physical memory, and virtual memory usage is allowed to exceed this allocation by this ratio.&amp;lt;/description&amp;gt;
+                &amp;lt;name&amp;gt;yarn.nodemanager.vmem-pmem-ratio&amp;lt;/name&amp;gt;
+                &amp;lt;value&amp;gt;6.1&amp;lt;/value&amp;gt;
+        &amp;lt;/property&amp;gt;
+&amp;lt;/configuration&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;p&gt;You are done with hadoop “master” configuration!&lt;/p&gt;
 

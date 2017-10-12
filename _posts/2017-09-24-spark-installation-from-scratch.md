@@ -534,6 +534,7 @@ In above file we configured the following:
 vim yarn-site.xml
 ```
 
+```bash
 <configuration>
         <property>
                 <name>yarn.nodemanager.aux-services</name>
@@ -599,6 +600,7 @@ vim yarn-site.xml
                 <value>6.1</value>
         </property>
 </configuration>
+```
 
 You are done with hadoop "master" configuration!
 
