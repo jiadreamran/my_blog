@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Spark Installation and Configuration from Scratch II - Spark Installation
+title: Spark Installation and Configuration II - Spark Installation
 date: 2017-10-12 22:00:00
 category: "Hadoop"
 ---
@@ -160,7 +160,7 @@ mv spark-2.0.0-bin-hadoop2.6 spark2
 
 ### Spark Environment Variable Config
 
-Go back to hadoop user's root directory in "master", then open environment config file. Replace the config file with following. You can also just append the text in red.
+Go back to hadoop user's root directory in "master", then open environment config file. Replace the config file with following.
 
 ```bash
 # .bashrc
@@ -173,14 +173,14 @@ fi
 # User specific aliases and functions
 export JAVA_HOME=/usr/java/jdk1.7.0_80
 export SCALA_HOME=/home/hadoop/installer/scala
-*export SPARK_HOME=/home/hadoop/installer/spark2*{: style="color: red"}
+export SPARK_HOME=/home/hadoop/installer/spark2
 export HADOOP_HOME=/home/hadoop/installer/hadoop2
 export HADOOP_COMMON_LIB_NATIVE_DIR=${HADOOP_HOME}/lib/native
 export HADOOP_OPTS="-Djava.library.path=$HADOOP_HOME/lib"
 # Append Java lib, Hadoop lib, Scala lib to CLASSPATH
-export CLASSPATH=$CLASSPATH:$JAVA_HOME/lib:$HADOOP_HOME/lib:$SCALA_HOME/lib:*$SPARK_HOME/jars*{: style="color: red"}
+export CLASSPATH=$CLASSPATH:$JAVA_HOME/lib:$HADOOP_HOME/lib:$SCALA_HOME/lib:$SPARK_HOME/jars
 # Append Java bin, Hadoop bin/sbin, Scala bin to PATH
-export PATH=$PATH:$JAVA_HOME/bin:$HADOOP_HOME/bin:$HADOOP_HOME/sbin:$SCALA_HOME/bin*:$SPARK_HOME/bin:$SPARK_HOME/sbin*{: style="color: red"}
+export PATH=$PATH:$JAVA_HOME/bin:$HADOOP_HOME/bin:$HADOOP_HOME/sbin:$SCALA_HOME/bin:$SPARK_HOME/bin:$SPARK_HOME/sbin
 ```
 
 Make the .bashrc file effective.
