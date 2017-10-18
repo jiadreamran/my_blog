@@ -2,7 +2,7 @@
 layout: post
 title: Spark Installation and Configuration from Scratch II: Spark Installation
 date: 2017-10-12 22:00:00
-category: "Hadoop, Spark"
+category: "Hadoop"
 ---
 
 This is a continuation chapter. You need to complete the [last chapter](https://jiadreamran.github.io/my_blog/hadoop/2017/09/24/spark-installation-from-scratch.html){:target="_blank"} before proceeding.
