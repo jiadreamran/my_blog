@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Spark Installation and Configuration 2 Spark Installation
+title: Spark Installation and Configuration II - Spark Installation
 date: 2017-10-12 22:00:00
 category: "Hadoop"
 ---
@@ -184,3 +184,9 @@ export PATH=$PATH:$JAVA_HOME/bin:$HADOOP_HOME/bin:$HADOOP_HOME/sbin:$SCALA_HOME/
 ```
 
 Make the .bashrc file effective.
+
+SCP the .bashrc file to "slave01", make it effective there.
+
+```bash
+scp .bashrc slave01:~
+```
