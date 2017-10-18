@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Spark Installation and Configuration I - Hadoop Installation
+title: Spark Installation and Configuration 1 Hadoop Installation
 date: 2017-09-24 22:00:00
 category: "Hadoop"
 ---
