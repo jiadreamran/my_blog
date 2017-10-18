@@ -4,7 +4,7 @@
    <title>9leg</title>
    <link href="http://localhost:4000/atom.xml" rel="self" type="application/atom+xml"/>
    <link href="http://localhost:4000" rel="alternate" type="text/html" />
-   <updated>2017-10-12T00:37:40-04:00</updated>
+   <updated>2017-10-12T22:19:02-04:00</updated>
    <id>http://localhost:4000</id>
    <author>
      <name>jiadreamran</name>
@@ -13,13 +13,15 @@
 
    
    <entry>
-     <title>Spark Installation and Configuration from Scratch</title>
-     <link href="http://localhost:4000/hadoop/2017/09/24/spark-installation-from-scratch.html"/>
-     <updated>2017-09-24T18:00:00-04:00</updated>
-     <id>http://localhost:4000/hadoop/2017/09/24/spark-installation-from-scratch</id>
+     <title></title>
+     <link href="http://localhost:4000/2017/10/12/2017-09-24-spark-installation-from-scratch.html"/>
+     <updated>2017-10-12T22:19:02-04:00</updated>
+     <id>http://localhost:4000/2017/10/12/2017-09-24-spark-installation-from-scratch</id>
      <content type="html">&lt;p&gt;It has been a while since last time I updated something. During this time I have learned more about hadoop and spark, which leads to me the decision to focus on spark.&lt;/p&gt;
 
 &lt;p&gt;This is an article to guide you through spark installation/configuration via virtual machines. Again, I am not a typicall Linux/Mac user so everything is also new to me.&lt;/p&gt;
+
+&lt;p&gt;In this chapter, I will install Hadoop from scratch. In the next chapter, on top of what I got, I will install Spark.&lt;/p&gt;
 
 &lt;p&gt;What I have before installation:&lt;/p&gt;
 

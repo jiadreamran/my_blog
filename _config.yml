@@ -39,9 +39,9 @@ timezone:      null
 
 
 #Site config
-title: 9leg
-description: java,scala
-keywords: java,scala
+title: Eric"'s" Learning Blog
+description: java,scala,hadoop,spark,python
+keywords: java,scala,hadoop,spark,python
 url: https://jiadreamran.github.io/my_blog
 feed: /atom.xml
 favicon: /images/shortcut.jpg

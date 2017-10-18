@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Spark Installation and Configuration from Scratch
+title: Spark Installation and Configuration from Scratch I: Hadoop Installation
 date: 2017-09-24 22:00:00
 category: "Hadoop"
 ---
@@ -8,6 +8,8 @@ category: "Hadoop"
 It has been a while since last time I updated something. During this time I have learned more about hadoop and spark, which leads to me the decision to focus on spark.
 
 This is an article to guide you through spark installation/configuration via virtual machines. Again, I am not a typicall Linux/Mac user so everything is also new to me.
+
+In this chapter, I will install Hadoop from scratch. In the next chapter, on top of what I got, I will install Spark.
 
 What I have before installation:
 
