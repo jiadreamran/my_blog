@@ -82,7 +82,8 @@ I like Python better than Scala so I will install it :)
 A few steps to install Python:
 
 1. Install gcc
-2. 
+2. Install Python
+3. Install zlib
 
 ## Install GCC
 
@@ -137,18 +138,50 @@ yum install gcc
 [Download Python 2.7.12 souce code](https://www.python.org/ftp/python/2.7.12/Python-2.7.12.tgz){:target="_blank"}. Here is also the download page for reference:
 [https://www.python.org/downloads/release/python-2712/](https://www.python.org/downloads/release/python-2712/){:target="_blank"}.
 
-FTP the tgz file to both vms, under root user's installer directory.
+FTP the tgz file to both vms, under root user's installer directory. Unzip Python.
 
+```bash
+cd installer
+tar -zxvf Python-2.7.12.tgz
+```
 
-## Install Spark
+## Install zlib
 
-### Spark Download
+[Download zlib 1.2.8](https://sourceforge.net/projects/libpng/files/zlib/1.2.8/zlib-1.2.8.tar.gz/download?use_mirror=phoenixnap&download=){:target="_blank"}.
+
+Upload the gzip file to installer folder (root user) for both vms. Unzip it. Then rename the zipped folder to "zlib". Lastly, replace the zlib folder in Python module folder with this zlib folder (both vms).
+
+```bash
+# In installer folder
+tar -zxvf zlib-1.2.8.tar.gz
+mv zlib-1.2.8 zlib
+rm -rf Python-2.7.12/Modules/zlib/
+mv zlib Python-2.7.12/Modules/
+```
+
+Install Python, do it for both vms:
+
+```bash
+cd Python-2.7.12
+./configure --prefix=/usr/local/python27
+make
+make install 
+# Rename the old Python folder (comes with Redhat)
+mv /usr/bin/python /usr/bin/python_old
+# Replace with newly Installed Python
+ln -s /usr/local/python27/bin/python /usr/bin/
+python
+```
+
+# Install Spark
+
+## Spark Download
 [Download Spark 2.0.0 for Hadoop 2.6 Version](https://d3kbcqa49mib13.cloudfront.net/spark-2.0.0-bin-hadoop2.6.tgz){:target="_blank"}. Here is also the download page for reference:
 [https://spark.apache.org/downloads.html](https://spark.apache.org/downloads.html){:target="_blank"}.
 
 FTP the tar file to hadoop@master's installer folder. Unzip it:
 
-### Spark Extraction/Installation
+## Spark Extraction/Installation
 
 ```bash
 # "hadoop" is the user, "master" is the machine
@@ -158,7 +191,7 @@ tar -zxvf spark-2.0.0-bin-hadoop2.6.tgz
 mv spark-2.0.0-bin-hadoop2.6 spark2
 ```
 
-### Spark Environment Variable Config
+## Spark Environment Variable Configuration
 
 Go back to hadoop user's root directory in "master", then open environment config file. Replace the config file with following.
 
@@ -190,3 +223,104 @@ SCP the .bashrc file to "slave01", make it effective there.
 ```bash
 scp .bashrc slave01:~
 ```
+
+## Spark Application Configuration
+
+Create and configure spark-env shell script:
+
+```bash
+cp spark-env.sh.template spark-env.sh
+vim spark-env.sh
+```
+
+Add the following to spark-evn.sh file, it should be literally empty, just have all types of comments:
+
+```bash
+export JAVA_HOME=/usr/java/jdk1.7.0_80
+export SCALA_HOME=/home/hadoop/installer/scala
+export SPARK_MASTER_HOST=master
+export HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop
+export SPARK_EXECUTOR_MEMORY=600M
+export SPARK_DRIVER_MEMORY=600M
+```
+
+Configure "slave" file:
+
+```bash
+vim slave
+```
+
+Type in the following entries:
+
+```bash
+master
+slave01
+```
+
+Move configured "spark2" folder to "slave01":
+
+```bash
+cd 
+cd installer
+scp -r spark2 slave01:~/installer/
+```
+
+## Test Start Spark
+
+When all the above configurations are done, you can try to start spark in "master":
+
+```bash
+start-master.sh
+start-slaves.sh
+# See started processes
+jps
+```
+
+If everything works well, you should be seeing:
+
+* ResourceManager
+* Master
+* Worker
+* NameNode
+* Jps
+* SecondaryNameNode
+
+Each of them will have a process number in front.
+
+If you run the jps in "slave01", this is what you should see:
+
+* NodeManager
+* DataNode
+* Worker
+* Jps
+
+# Test Spark
+
+You can continue to use the previous word count in the last blog as the spark test. The location of file in hdfs is /data/wordcount/1.txt. In the previous article, we have the output folder created in hdfs for hadoop example, we need to delete it:
+
+```bash
+hdfs dfs -rm -r /data/wordcount/output
+```
+
+To test spark wordcount, simply start spark-shell, you will be brought to Scala for Spark:
+
+```bash
+spark-shell
+```
+
+Within scala, try:
+
+```scala
+val file = sc.textFile("hdfs://master:9000/data/wordcount")
+val count=file.flatMap(line => line.split(" ")).map(word => (word,1)).reduceByKey(_+_)
+count.collect()
+```
+
+You should be seeing the following result:
+
+```bash
+res0: Array[(String, Int)] = Array((spark,2), (hadoop,2), (C#,1), (java,3), (storm,1), (c,2))
+```
+
+Congratulations! You have successfully installed Spark on both your vms!
+
